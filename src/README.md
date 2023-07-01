@@ -37,7 +37,7 @@ Once the program is compiled, you can run it using the following steps:
    ../data/simulated-data/casX/casX-N.fasta
    ```
 
-   Note: Replace `X` in the file paths with the specific case number, and replace `N` with the number of sequences.
+   Note: Replace `X` in the file paths with the specific case number, and replace `N` with the number of sequences (`<#sequences>`).
 
 ## Clean Up
 To clean up the compiled files, you can run the following command in the "src" directory:

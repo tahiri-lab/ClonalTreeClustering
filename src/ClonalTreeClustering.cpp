@@ -19,18 +19,18 @@ using namespace std;
 vector<vector<char>> readNewick(ifstream& file1) {
   vector<vector<char>> newickLineageWhole = {};
   vector<char> newickLineageLine = {};
-  char c;
+  string line;
   
-  while(file1.get(c)) {
-    newickLineageLine.push_back(c);
-    if(c == ';'){
-      newickLineageWhole.push_back(newickLineageLine);
-      newickLineageLine.clear();
+  while(getline(file1, line)) {
+    if(!line.empty()) {
+      for(char c : line) {
+        newickLineageLine.push_back(c);
+        if(c == ';') {
+          newickLineageWhole.push_back(newickLineageLine);
+          newickLineageLine.clear();
+        }
+      }
     }
-  }
-  
-  if (!newickLineageLine.empty()) {
-      newickLineageWhole.push_back(newickLineageLine);
   }
 
   cout<<"---------------------------------------------------"<<endl;
@@ -57,8 +57,6 @@ void initInputLineage(struct InputLineage *aLineage) {
   aLineage->length.push_back(vector<double>());
   aLineage->ADJACENCE = NULL;  
 }
-
-//nbNodes -> uses "newickLineage", this function will be used to calculate de penalty
 
 void readNewickLineage(vector<char> newickLineageLine, struct InputLineage *aLineage) {
   int cpt = 0;

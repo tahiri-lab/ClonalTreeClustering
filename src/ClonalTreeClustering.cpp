@@ -7,7 +7,7 @@
 #include <map>
 #include <sstream>
 
-#include "readLineage.h"
+#include "ClonalTreeClustering.h"
 #include "struct-lineage.h"
 
 using namespace std;

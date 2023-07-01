@@ -262,11 +262,16 @@ void degree(vector<char> newickLineageLine, struct InputLineage * aLineage) {
 // PROGRAMME
 //================================================================
 
-int main() {
+int main(int argc, char* argv[]) {
 
-  string filename1;
-  cout<<"Enter the name of the lineage file : ";
-  cin>>filename1;
+  if(argc != 4) {
+    cerr<<"Usage: ./ClonalTreeClustering <newick_file> <fasta_file> <#sequences>"<<endl;
+    return 1;
+  }
+  
+  string filename1 = argv[1] ;
+  string filename2 = argv[2] ;
+  int nbSeq = stoi(argv[3]);
 
   // open the newick file in read mode
   ifstream file1(filename1);
@@ -287,12 +292,6 @@ int main() {
     readNewickLineage(newickLineageLine, &aLineage);
 
     // collect the info of the occurrences (different files)
-    string filename2;
-    int nbSeq;
-    cout<<"Enter the name of the fasta file : ";
-    cin>>filename2;
-    cout<<"Enter the number of sequence in the file : ";
-    cin>>nbSeq;
     cout<<"---------------------------------------------------"<<endl;
 
     // open the fasta file in read mode
@@ -321,9 +320,6 @@ int main() {
     cout<<"**************** END OF 1 LINEAGE *****************"<<endl;
     cout<<"---------------------------------------------------"<<endl;
   }
-  // we finished to read all the lineage trees
-  
-  // don't forget to free the memory
-  
+
   return 0;
 }

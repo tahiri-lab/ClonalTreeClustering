@@ -12,7 +12,7 @@ For each given lineage file "tree.fasta", there is :
 - the real tree "tree.GT.naive.nk"
 - the tree deduced by GCtree "tree.GT.nk"
 
-### simple cases (case 1, case 2 and case 3)
+### Simple cases (case 1, case 2 and case 3)
 
 For each given case, created manually, there is :
 - the alignment file "caseX-N.fasta", where X is the number of the case and N the number of sequences

@@ -462,11 +462,7 @@ int main(int argc, char* argv[]) {
     printParentTable(parentTable);
 
     //========================= DISTANCE MATRIX =========================//
-/*
-    // Construire la matrice de distances
-    vector<vector<double>> distanceMatrix = buildDistanceMatrix(parentTable);
-      
-    // Afficher la matrice de distances
+    /*vector<vector<double>> distanceMatrix = buildDistanceMatrix(parentTable);
     printDistanceMatrix(distanceMatrix, parentTable);*/
       
     double** distanceMatrix = convertToDistanceMatrix(parentTable, parentTable.size());

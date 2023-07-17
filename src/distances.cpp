@@ -341,11 +341,12 @@ void freeDistanceMatrix(double** distanceMatrix, int n) {
 }*/
 
 void printDistanceMatrix(double** distanceMatrix, int size) {
-  for (int i = 0; i < size; ++i) {
-    for (int j = 0; j < size; ++j) {
-      cout << distanceMatrix[i][j] << " ";
+  cout<<"********** DISTANCE MATRIX **********"<<endl;
+  for(int i=0; i<size; ++i) {
+    for(int j=0; j<size; ++j) {
+      cout<<distanceMatrix[i][j]<<" ";
     }
-    cout << endl;
+    cout<<endl;
   }
 }
 
@@ -356,6 +357,44 @@ void freeDistanceMatrix(double** distanceMatrix, int size) {
   delete[] distanceMatrix;
 }
 
+//========================= ABUNDANCE MAP =========================//
+
+map<string, int> abundance(ifstream& file2, int seq) {
+  map<string, int> dictionary;
+  string line;
+  
+  while(getline(file2, line)) { // we go through the file line by line
+      if(line.find(">naive") != string::npos) // count the occurrences of ">naive"
+          dictionary["naive"]++;
+      else { // we count the occurrence for each sequence from ">seq1"
+          for(int i=1; i<=(seq+1); i++) {
+              string key = "seq" + to_string(i);
+              if(line.find(key) != string::npos)
+                  dictionary[key]++;
+          }
+      }
+  }
+
+  // case of the tens adding to the units
+  for(int i=1; i<=static_cast<int>(seq/10); i++) {
+      string keyUnit = "seq" + to_string(i);
+      for(int j=i*10; j<i*10+10; j++) {
+          string key10 = "seq" + to_string(j);
+          dictionary[keyUnit] -= dictionary[key10];
+      }
+  }
+  
+  auto it = dictionary.begin();
+  while(it != dictionary.end()) {
+    if(it->second == 0) {
+      it = dictionary.erase(it);
+    }else {
+      it++;
+    }
+  }
+  
+  return dictionary;
+}
 
 
 //================================================================
@@ -364,12 +403,14 @@ void freeDistanceMatrix(double** distanceMatrix, int size) {
 
 int main(int argc, char* argv[]) {
 
-  if(argc != 2) {
-    cerr<<"Usage: ./ClonalTreeClustering <newick_file>"<<endl;
+  if(argc != 4) {
+    cerr<<"Usage: ./ClonalTreeClustering <newick_file> <fasta_file> <#sequences>"<<endl;
     return 1;
   }
   
-  string filename = argv[1] ;
+  string filename = argv[1];
+  string filename2 = argv[2];
+  int nbSeq = stoi(argv[3]);
 
   // open the newick file in read mode
   ifstream file(filename);
@@ -392,19 +433,21 @@ int main(int argc, char* argv[]) {
       //delete the penultimate element
       modifiedLineageLine.erase(modifiedLineageLine.end() - 2);
     }
-    // display the vector content after deletion
+    /*
+    // display the vector content after deletion to check if it's right
     cout<<"vector: ";
     for(char c : modifiedLineageLine) {
       cout<<c;
     }
-    cout<<endl;
+    cout<<endl;*/
 
     //convert the vector to a char ptr to work on the relationships
     modifiedLineageLine.push_back('\0');
     char * newick = modifiedLineageLine.data();
-    cout<<"char ptr: "<<newick<<endl;
+    //cout<<"char ptr: "<<newick<<endl; //to check if it's right
 
     //==================== RELATIONSHIPS BETWEEN NODES ====================//
+    cout<<"********** RELATIONSHIPS BETWEEN NODES **********"<<endl;
     fprintf(stderr,"newick: %s\n",newick);
     vector<string> vec=mysplit2(strdup(newick));
     for(int i=0;0&&i<vec.size();i++)
@@ -429,6 +472,26 @@ int main(int argc, char* argv[]) {
     double** distanceMatrix = convertToDistanceMatrix(parentTable, parentTable.size());
     printDistanceMatrix(distanceMatrix, parentTable.size());
     freeDistanceMatrix(distanceMatrix, parentTable.size());
+
+    //========================= ABUNDANCE MAP =========================//
+
+    // open the fasta file in read mode
+    ifstream file2(filename2);
+    if(!file2) {
+      cerr<<"Error: Unable to open the file."<<endl;
+      return -1;
+    }
+    map<string, int> abundanceDico = abundance(file2, nbSeq);
+    file2.close();
+    
+    // display the counts
+    int total_count=0;
+    cout<<"********** ABUNDANCE MAP **********"<<endl;
+    for (const auto& pair : abundanceDico) {
+      cout<<pair.first<<" : "<<pair.second<<endl;
+      total_count += pair.second;
+    }
+    cout<<"Total count of sequences : "<<total_count<<endl;
   }
 
   return 0;

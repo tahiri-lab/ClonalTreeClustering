@@ -7,10 +7,10 @@ This is then used to build clusters of B cell line trees using the [KMeansSuperT
 
 This README provides instructions on how to compile and run the program.
 
-### 1st version
+### 1st version (V1_ClonalTreeClustering.cpp)
 Files with "V1" in their name correspond to the first version of ClonalTreeClustering. Its purpose was to read and store B cell line trees in a C++ data structure before constructing a matrix of distances between all pairs of nodes. This version is no longer in use, see version 2.
 
-### 2nd version
+### 2nd version (ClonalTreeClustering.cpp)
 The aim of the second version of ClonalTree clustering is to read B-cell line trees and construct the distance matrix between all the nodes in the tree, as well as building a map containing the abundance of each node. This is the version used and compiled by the Makefile.
 
 This version takes as input a Newick file containing a single B cell line tree, a fasta file corresponding to the tree and an integer corresponding to the number of sequences in the fasta file. The fasta file and the integer are needed to have the abundance information to build the map.

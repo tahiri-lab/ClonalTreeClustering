@@ -218,127 +218,28 @@ void printParentTable(const vector<node_t>& parentTable) {
 }
 
 //========================= DISTANCE MATRIX =========================//
-/*
-vector<vector<double>> buildDistanceMatrix(const vector<node_t>& parentTable) {
-  int n = parentTable.size();
-  vector<vector<double>> distanceMatrix(n, vector<double>(n, 0.0));
-
-  // Parcourir chaque nœud de la parentTable
-  for (int i = 0; i < n; ++i) {
-    int parent = parentTable[i].parent;
-    double distance = parentTable[i].distance;
-
-    // Remplir la distance entre le nœud actuel et son parent
-    if (parent != -1) {
-      distanceMatrix[i][parent] = distance;
-      distanceMatrix[parent][i] = distance;
-    }
-  }
-
-  // Parcourir la distanceMatrix pour mettre à jour les distances entre les nœuds
-  for (int k = 0; k < n; ++k) {
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        if (distanceMatrix[i][k] != 0 && distanceMatrix[k][j] != 0) {
-          double distance = distanceMatrix[i][k] + distanceMatrix[k][j];
-          if (distanceMatrix[i][j] == 0 || distance < distanceMatrix[i][j]) {
-            distanceMatrix[i][j] = distance;
-            distanceMatrix[j][i] = distance;
-          }
-        }
-      }
-    }
-  }
-
-  return distanceMatrix;
-}*/
-/*
-double** buildDistanceMatrix(const vector<node_t>& parentTable) {
-  int n = parentTable.size();
-  double** distanceMatrix = new double*[n];
-  for (int i = 0; i < n; ++i) {
-    distanceMatrix[i] = new double[n];
-    memset(distanceMatrix[i], 0, sizeof(double) * n);
-  }
-
-  // Remplir la distance entre chaque nœud et son parent
-  for (int i = 0; i < n; ++i) {
-    int parent = parentTable[i].parent;
-    double distance = parentTable[i].distance;
-
-    if (parent != -1) {
-      distanceMatrix[i][parent] = distance;
-      distanceMatrix[parent][i] = distance;
-    }
-  }
-
-  // Calculer les distances entre les nœuds en utilisant l'algorithme de Floyd-Warshall
-  for (int k = 0; k < n; ++k) {
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        if (distanceMatrix[i][k] != 0 && distanceMatrix[k][j] != 0) {
-          double distance = distanceMatrix[i][k] + distanceMatrix[k][j];
-          if (distanceMatrix[i][j] == 0 || distance < distanceMatrix[i][j]) {
-            distanceMatrix[i][j] = distance;
-            distanceMatrix[j][i] = distance;
-          }
-        }
-      }
-    }
-  }
-
-  return distanceMatrix;
-}*/
 double** convertToDistanceMatrix(const vector<node_t>& parentTable, int size) {
-  // Créer une matrice symétrique carrée de taille 'size'
+  //create a symmetrical square matrix of size 'size'
   double** distanceMatrix = new double*[size];
-  for (int i = 0; i < size; ++i) {
+  for(int i=0; i<size; ++i) {
     distanceMatrix[i] = new double[size];
-    for (int j = 0; j < size; ++j) {
+    for(int j=0; j<size; ++j) {
       distanceMatrix[i][j] = 0.0; // Initialiser toutes les valeurs à 0
     }
   }
-
-  // Remplir la matrice avec les distances à partir du tableau parentTable
-  for (const node_t& node : parentTable) {
+/*
+  //fill the matrix with distances from parentTable
+  for(const node_t& node : parentTable) {
     int parent = node.parent;
     double distance = node.distance;
     if (parent >= 0 && parent < size) {
       distanceMatrix[parent][node.serial] = distance;
       distanceMatrix[node.serial][parent] = distance;
     }
-  }
+  }*/
 
   return distanceMatrix;
 }
-/*
-void printDistanceMatrix(const vector<vector<double>>& distanceMatrix, const vector<node_t>& parentTable) {
-  int numNodes = parentTable.size();
-
-  // Print the distance matrix
-  for (int i = 0; i < numNodes; ++i) {
-    for (int j = 0; j < numNodes; ++j) {
-      cout << distanceMatrix[i][j] << " ";
-    }
-    cout << endl;
-  }
-}*/
-/*
-void printDistanceMatrix(double** distanceMatrix, int n) {
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      cout << distanceMatrix[i][j] << " ";
-    }
-    cout << endl;
-  }
-}
-
-void freeDistanceMatrix(double** distanceMatrix, int n) {
-  for (int i = 0; i < n; ++i) {
-    delete[] distanceMatrix[i];
-  }
-  delete[] distanceMatrix;
-}*/
 
 void printDistanceMatrix(double** distanceMatrix, int size) {
   cout<<"********** DISTANCE MATRIX **********"<<endl;
@@ -462,9 +363,6 @@ int main(int argc, char* argv[]) {
     printParentTable(parentTable);
 
     //========================= DISTANCE MATRIX =========================//
-    /*vector<vector<double>> distanceMatrix = buildDistanceMatrix(parentTable);
-    printDistanceMatrix(distanceMatrix, parentTable);*/
-      
     double** distanceMatrix = convertToDistanceMatrix(parentTable, parentTable.size());
     printDistanceMatrix(distanceMatrix, parentTable.size());
     freeDistanceMatrix(distanceMatrix, parentTable.size());

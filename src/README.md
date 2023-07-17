@@ -3,6 +3,14 @@
 ## Overview
 ClonalTreeClustering is part of a project to cluster B cell lineage trees. The objective of ClonalTreeClustering is to read and store B cell line trees in a C++ data structure. It also aims to construct a matrix of distances between all pairs of nodes. This README provides instructions on how to compile and run the program.
 
+### 1st version
+Files with "V1" in their name correspond to the first version of ClonalTreeClustering. Its purpose was to read and store B cell line trees in a C++ data structure before constructing a matrix of distances between all pairs of nodes. This version is no longer in use, see version 2.
+
+### 2nd version
+The aim of the second version of ClonalTree clustering is to read B-cell line trees and construct the distance matrix between all the nodes in the tree, as well as building a dictionary containing the abundance of each node. This is the version used and compiled by the Makefile.
+
+
+
 ## Prerequisites
 Before compiling and running ClonalTreeClustering, ensure that you have the following:
 

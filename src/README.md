@@ -1,7 +1,11 @@
 # ClonalTreeClustering
 
 ## Overview
-ClonalTreeClustering is part of a project to cluster B cell lineage trees. The objective of ClonalTreeClustering is to read and store B cell line trees in a C++ data structure. It also aims to construct a matrix of distances between all pairs of nodes. This README provides instructions on how to compile and run the program.
+ClonalTreeClustering is part of a project to cluster B cell lineage trees. The aim of ClonalTreeClustering is to read and construct a distance matrix between all pairs of nodes for each of the trees contained in the Newick file provided as input to the program. The program also builds a map containing abundance information for all nodes in each tree.
+
+This is then used to build clusters of B cell line trees using the [KMeansSuperTreeClustering](https://github.com/tahiri-lab/KMeansSuperTreeClustering) program.
+
+This README provides instructions on how to compile and run the program.
 
 ### 1st version
 Files with "V1" in their name correspond to the first version of ClonalTreeClustering. Its purpose was to read and store B cell line trees in a C++ data structure before constructing a matrix of distances between all pairs of nodes. This version is no longer in use, see version 2.

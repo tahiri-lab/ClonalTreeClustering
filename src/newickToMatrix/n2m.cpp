@@ -14,9 +14,9 @@
 #include <string.h>
 #include <time.h>
 
-#include "../sources/hgt_3.4_interactive/structures.h"
-#include "../sources/hgt_3.4_interactive/utils_tree.cpp"
-#include "../sources/hgt_3.4_interactive/fonctions.cpp"
+#include "hgt_3.4_interactive/structures.h"
+#include "hgt_3.4_interactive/utils_tree.cpp"
+#include "hgt_3.4_interactive/fonctions.cpp"
 
 #define FAIL -1
 #define TRUE 1

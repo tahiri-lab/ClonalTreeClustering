@@ -1,0 +1,12 @@
+Exception: STATUS_ACCESS_VIOLATION at eip=00402481
+eax=00000000 ebx=011C10A0 ecx=00000004 edx=00000008 esi=011C10E0 edi=00419A18
+ebp=0027CC38 esp=0027CC18 program=c:\Users\Alix\Documents\UQAM\Doctorat\programmes\newickToMatrix\a.exe, pid 8412, thread main
+cs=0023 ds=002B es=002B fs=0053 gs=002B ss=002B
+Stack trace:
+Frame     Function  Args
+0027CC38  00402481  (011C10B0, 011C10A0, 00000000, FFFFFFFD)
+0027CC88  004195D5  (011989F0, 0041C392, 004193DA, 004193FF)
+0027CCB8  00419465  (00000002, 6116B648, 01180090, 0027CC50)
+0027CD68  610060D8  (00000000, 0027CDA0, 61005450, 0027CDA0)
+61005450  61004416  (0000009C, A02404C7, E8611021, FFFFFF48)
+      3 [main] a 8412 _cygtls::handle_exceptions: Error while dumping state (probably corrupted stack)

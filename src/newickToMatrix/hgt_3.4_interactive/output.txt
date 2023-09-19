@@ -1,0 +1,211 @@
+==================================================================================
+| Program : HGT Detection 3.4 - March, 2012                                      |
+| Authors   : Alix Boc, Alpha Boubabcar Diallo and Vladimir Makarenkov           |
+|             (Universite du Quebec a Montreal)                                  |
+| This program computes a unique scenario of horizontal gene transfers (HGT) for |
+| the given pair of species and gene phylogenetic trees.                         |
+==================================================================================
+
+Species tree :
+((((P.hori:1.0,M.ther:1.0,A.fulg:1.0,M.jann:1.0):1.0,(S.solf:1.0,P.aero:1.0):1.0):1.0,(S.cere:1.0,H.sapi:1.0):1.0):1.0,((B.burg:1.0,T.pall:1.0):1.0,Synech:1.0,C.trac:1.0,(T.ther:1.0,D.radi:1.0):1.0,(N.gono:1.0,H.pilo:1.0,(P.aeru:1.0,E.coli:1.0,H.infl:1.0):1.0,(R.caps:1.0,R.prow:1.0):1.0):1.0,M.tube:1.0,T.mari:1.0,A.aeol:1.0,(P.ging:1.0,C.tepi:1.0):1.0,(C.acet:1.0,(B.subt:1.0,(E.faec:1.0,S.pyog:1.0):1.0):1.0,(M.pneu:1.0,M.geni:1.0):1.0):1.0):1.0);
+
+Gene Tree :
+(((((D.radi:1.0,T.ther:1.0):1.0,((((N.gono:1.0,P.aeru:1.0):1.0,((R.prow:1.0,H.pilo:1.0):1.0,(H.infl:1.0,E.coli:1.0):1.0):1.0):1.0,(A.aeol:1.0,Synech:1.0):1.0):1.0,((C.trac:1.0,P.ging:1.0):1.0,C.tepi:1.0):1.0):1.0):1.0,((R.caps:1.0,T.mari:1.0):1.0,(M.tube:1.0,C.acet:1.0):1.0):1.0):1.0,((M.pneu:1.0,M.geni:1.0):1.0,((S.pyog:1.0,E.faec:1.0):1.0,B.subt:1.0):1.0):1.0):100.0,((((H.sapi:1.0,S.cere:1.0):1.0,A.fulg:1.0):1.0,M.ther:1.0):1.0,(M.jann:1.0,((S.solf:1.0,P.aero:1.0):1.0,(P.hori:1.0,(T.pall:1.0,B.burg:1.0):1.0):1.0):1.0):1.0):1.0);
+
+
+=============================================
+= Criteria values before the computation 
+=============================================
+Robinson and Foulds distance (RF) = 32
+Least-squares coefficient(LS)     = 438402.881
+Bipartition dissimilarity         = 54.0
+
+
+Bootstrap values were computed with 101 gene trees
+
+
+================================================================
+| Iteration #1 : 1 HGT was found
+================================================================
+|
+| HGT 1 / 1  Trivial (bootstrap value = 10.9% inverse = 10.9%) 
+| From subtree (Synech) to subtree (A.aeol)
+| RF = 31 , LS = 438207.000 , BD = 52.0
+| rRF = 31 , rLS = 438207.000 , rBD = 52.0
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 29 , LS = 438167.621 , BD = 48.5
+================================================================
+
+================================================================
+| Iteration #2 : 1 HGT was found
+================================================================
+|
+| HGT 1 / 1  Regular (bootstrap value = 79.2% inverse = 6.9%) 
+| From subtree (P.ging) to subtree (C.trac)
+| RF = 26 , LS = 437755.196 , BD = 45.5
+| rRF = 27 , rLS = 438112.997 , rBD = 47.0
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 26 , LS = 437755.196 , BD = 45.5
+================================================================
+
+================================================================
+| Iteration #3 : 6 HGTs were found
+================================================================
+|
+| HGT 1 / 6  Regular (bootstrap value = 88.1% inverse = 1.0%) 
+| From subtree (P.hori) to subtree (B.burg, T.pall)
+| RF = 21 , LS = 1094.405 , BD = 36.0
+| rRF = 25 , rLS = 562474.670 , rBD = 44.5
+| 
+| HGT 2 / 6  Regular (bootstrap value = 31.7% inverse = 1.0%) 
+| From subtree (T.mari) to subtree (R.caps)
+| RF = 22 , LS = 438142.413 , BD = 40.0
+| rRF = 25 , rLS = 436638.397 , rBD = 44.5
+| 
+| HGT 3 / 6  Regular (bootstrap value = 25.7% inverse = 1.0%) 
+| From subtree (A.fulg) to subtree (H.sapi, S.cere)
+| RF = 24 , LS = 437732.370 , BD = 41.5
+| rRF = 25 , rLS = 437728.199 , rBD = 42.5
+| 
+| HGT 4 / 6  Regular (bootstrap value = 58.4% inverse = 3.0%) 
+| From subtree (M.tube) to subtree (C.acet)
+| RF = 24 , LS = 438183.275 , BD = 43.0
+| rRF = 25 , rLS = 436791.225 , rBD = 43.0
+| 
+| HGT 5 / 6  Regular (bootstrap value = 35.6% inverse = 21.8%) 
+| From subtree (N.gono) to subtree (P.aeru)
+| RF = 24 , LS = 437747.136 , BD = 44.0
+| rRF = 25 , rLS = 437735.787 , rBD = 44.0
+| 
+| HGT 6 / 6  Trivial (bootstrap value = 57.4% inverse = 7.9%) 
+| From subtree (H.pilo) to subtree (R.prow)
+| RF = 27 , LS = 437755.197 , BD = 44.5
+| rRF = 27 , rLS = 437755.197 , rBD = 44.5
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 10 , LS = 798.101 , BD = 23.5
+================================================================
+
+================================================================
+| Iteration #4 : 2 HGTs were found
+================================================================
+|
+| HGT 1 / 2  Trivial (bootstrap value = 4.0% inverse = 8.9%) 
+| From subtree (C.acet, M.tube) to subtree (R.caps, T.mari)
+| RF = 9 , LS = 769.362 , BD = 21.5
+| rRF = 9 , rLS = 769.362 , rBD = 21.5
+| 
+| HGT 2 / 2  Trivial (bootstrap value = 7.9% inverse = 22.8%) 
+| From subtree (H.pilo, R.prow) to subtree (E.coli, H.infl)
+| RF = 9 , LS = 788.170 , BD = 21.5
+| rRF = 9 , rLS = 788.170 , rBD = 21.5
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 8 , LS = 759.431 , BD = 19.5
+================================================================
+
+================================================================
+| Iteration #5 : 1 HGT was found
+================================================================
+|
+| HGT 1 / 1  Trivial (bootstrap value = 5.0% inverse = 4.0%) 
+| From subtree (A.aeol, Synech) to subtree (E.coli, H.infl, H.pilo, N.gono, P.aeru, R.prow)
+| RF = 7 , LS = 524.076 , BD = 15.5
+| rRF = 7 , rLS = 524.076 , rBD = 15.5
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 7 , LS = 524.076 , BD = 15.5
+================================================================
+
+================================================================
+| Iteration #6 : 1 HGT was found
+================================================================
+|
+| HGT 1 / 1  Trivial (bootstrap value = 4.0% inverse = 4.0%) 
+| From subtree (C.tepi, C.trac, P.ging) to subtree (A.aeol, E.coli, H.infl, H.pilo, N.gono, P.aeru, R.prow, Synech)
+| RF = 6 , LS = 252.354 , BD = 11.5
+| rRF = 6 , rLS = 252.354 , rBD = 11.5
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 6 , LS = 252.354 , BD = 11.5
+================================================================
+
+================================================================
+| Iteration #7 : 1 HGT was found
+================================================================
+|
+| HGT 1 / 1  Trivial (bootstrap value = 4.0% inverse = 2.0%) 
+| From subtree (D.radi, T.ther) to subtree (A.aeol, C.tepi, C.trac, E.coli, H.infl, H.pilo, N.gono, P.aeru, P.ging, R.prow, Synech)
+| RF = 5 , LS = 145.768 , BD = 9.0
+| rRF = 5 , rLS = 145.768 , rBD = 9.0
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 5 , LS = 145.768 , BD = 9.0
+================================================================
+
+================================================================
+| Iteration #8 : 1 HGT was found
+================================================================
+|
+| HGT 1 / 1  Trivial (bootstrap value = 2.0% inverse = 3.0%) 
+| From subtree (A.aeol, C.tepi, C.trac, D.radi, E.coli, H.infl, H.pilo, N.gono, P.aeru, P.ging, R.prow, Synech, T.ther) to subtree (C.acet, M.tube, R.caps, T.mari)
+| RF = 4 , LS = 79.380 , BD = 6.0
+| rRF = 4 , rLS = 79.380 , rBD = 6.0
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 4 , LS = 79.380 , BD = 6.0
+================================================================
+
+================================================================
+| Iteration #9 : 1 HGT was found
+================================================================
+|
+| HGT 1 / 1  Regular (bootstrap value = 53.5% inverse = 9.9%) 
+| From subtree (B.burg, P.hori, T.pall) to subtree (P.aero, S.solf)
+| RF = 2 , LS = 22.641 , BD = 3.0
+| rRF = 3 , rLS = 21.832 , rBD = 2.5
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 2 , LS = 22.641 , BD = 3.0
+================================================================
+
+================================================================
+| Iteration #10 : 1 HGT was found
+================================================================
+|
+| HGT 1 / 1  Trivial (bootstrap value = 11.9% inverse = 11.9%) 
+| From subtree (B.burg, P.aero, P.hori, S.solf, T.pall) to subtree (M.jann)
+| RF = 1 , LS = 9.886 , BD = 1.5
+| rRF = 1 , rLS = 9.886 , rBD = 1.5
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 1 , LS = 9.886 , BD = 1.5
+================================================================
+
+================================================================
+| Iteration #11 : 1 HGT was found
+================================================================
+|
+| HGT 1 / 1  Trivial (bootstrap value = 5.0% inverse = 6.9%) 
+| From subtree (M.ther) to subtree (A.fulg, H.sapi, S.cere)
+| RF = 0 , LS = 0.000 , BD = 0.0
+| rRF = 0 , rLS = 0.000 , rBD = 0.0
+| 
+================================================================
+| After this iteration the criteria values are as follows :
+| RF = 0 , LS = 0.000 , BD = 0.0
+================================================================
+
+Total number of HGTs : 17 (7 regular + 10 trivial HGTs)

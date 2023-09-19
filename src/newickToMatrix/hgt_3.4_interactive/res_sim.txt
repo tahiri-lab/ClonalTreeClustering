@@ -1,0 +1,17 @@
+Synech <> A.aeol<>10.9<>10.9<>Trivial
+P.ging <> C.trac<>79.2<>6.9<>Regular
+P.hori <> B.burg, T.pall<>88.1<>1.0<>Regular
+T.mari <> R.caps<>31.7<>1.0<>Regular
+A.fulg <> H.sapi, S.cere<>25.7<>1.0<>Regular
+M.tube <> C.acet<>58.4<>3.0<>Regular
+N.gono <> P.aeru<>35.6<>21.8<>Regular
+H.pilo <> R.prow<>57.4<>7.9<>Trivial
+C.acet, M.tube <> R.caps, T.mari<>4.0<>8.9<>Trivial
+H.pilo, R.prow <> E.coli, H.infl<>7.9<>22.8<>Trivial
+A.aeol, Synech <> E.coli, H.infl, H.pilo, N.gono, P.aeru, R.prow<>5.0<>4.0<>Trivial
+C.tepi, C.trac, P.ging <> A.aeol, E.coli, H.infl, H.pilo, N.gono, P.aeru, R.prow, Synech<>4.0<>4.0<>Trivial
+D.radi, T.ther <> A.aeol, C.tepi, C.trac, E.coli, H.infl, H.pilo, N.gono, P.aeru, P.ging, R.prow, Synech<>4.0<>2.0<>Trivial
+A.aeol, C.tepi, C.trac, D.radi, E.coli, H.infl, H.pilo, N.gono, P.aeru, P.ging, R.prow, Synech, T.ther <> C.acet, M.tube, R.caps, T.mari<>2.0<>3.0<>Trivial
+B.burg, P.hori, T.pall <> P.aero, S.solf<>53.5<>9.9<>Regular
+B.burg, P.aero, P.hori, S.solf, T.pall <> M.jann<>11.9<>11.9<>Trivial
+M.ther <> A.fulg, H.sapi, S.cere<>5.0<>6.9<>Trivial

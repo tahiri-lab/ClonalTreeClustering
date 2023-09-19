@@ -1,0 +1,87 @@
+12,0.000000,26.500000
+mode=multicheck
+4
+HGT 1 / 4  Trivial
+3602932
+11543, 11927
+From branch 3602932--53 to branch 54--53
+RF = 11 , LS = 0.000 , BD = 25.0
+rRF = 11 , rLS = 0.000 , rBD = 25.0
+HGT 2 / 4  Trivial
+217136, 38924, 439290
+142104
+From branch 59--60 to branch 142104--60
+RF = 11 , LS = 0.000 , BD = 25.0
+rRF = 11 , rLS = 0.000 , rBD = 25.0
+HGT 3 / 4  Trivial
+349302
+48543
+From branch 349302--78 to branch 48543--78
+RF = 11 , LS = 0.000 , BD = 25.0
+rRF = 11 , rLS = 0.001 , rBD = 25.0
+HGT 4 / 4  Trivial
+599563
+599560
+From branch 599563--66 to branch 599560--66
+RF = 11 , LS = 0.001 , BD = 25.0
+rRF = 11 , rLS = 0.000 , rBD = 25.0
+RF = 8 , LS = 0.001 , BD = 20.5
+3
+HGT 1 / 3  Trivial
+11543, 11927, 3602932
+20418, 296344, 11230, 454004
+From branch 3602932--53 to branch 56--53
+RF = 7 , LS = 0.000 , BD = 15.0
+rRF = 7 , rLS = 0.001 , rBD = 15.0
+HGT 2 / 3  Trivial
+349302, 48543, 567188
+46404
+From branch 78--77 to branch 46404--77
+RF = 7 , LS = 0.000 , BD = 19.0
+rRF = 7 , rLS = 0.000 , rBD = 19.0
+HGT 3 / 3  Trivial
+217159, 297843
+565652, 599560, 599563
+From branch 64--65 to branch 66--65
+RF = 7 , LS = 0.000 , BD = 18.5
+rRF = 7 , rLS = 0.001 , rBD = 18.5
+RF = 5 , LS = 0.000 , BD = 11.5
+2
+HGT 1 / 2  Trivial
+732543
+11543, 11927, 20418, 296344, 11230, 454004, 3602932
+From branch 732543--53 to branch 3602932--53
+RF = 4 , LS = 0.001 , BD = 9.5
+rRF = 4 , rLS = 0.000 , rBD = 9.5
+HGT 2 / 2  Trivial
+349302, 48543, 567188, 151920, 552536492, 2564972, 46404
+10190795, 1051098, 154656, 505125, 1127552, 950102, 3377784
+From branch 77--68 to branch 72--68
+RF = 4 , LS = 0.000 , BD = 7.0
+rRF = 4 , rLS = 0.000 , rBD = 7.0
+RF = 3 , LS = 0.000 , BD = 5.0
+1
+HGT 1 / 1  Trivial
+11394
+11543, 11927, 20418, 296344, 11230, 454004, 3602932, 732543
+From branch 11394--53 to branch 732543--53
+RF = 2 , LS = 0.000 , BD = 3.5
+rRF = 2 , rLS = 0.000 , rBD = 3.5
+RF = 2 , LS = 0.000 , BD = 3.5
+1
+HGT 1 / 1  Trivial
+336671
+11335
+From branch 336671--51 to branch 11335--51
+RF = 1 , LS = 0.000 , BD = 1.5
+rRF = 1 , rLS = 0.000 , rBD = 1.5
+RF = 1 , LS = 0.000 , BD = 1.5
+1
+HGT 1 / 1  Trivial
+391650
+11335, 336671
+From branch 391650--51 to branch 336671--51
+RF = 0 , LS = 0.000 , BD = 0.0
+rRF = 0 , rLS = 0.000 , rBD = 0.0
+RF = 0 , LS = 0.000 , BD = 0.0
+Stat= 12 12

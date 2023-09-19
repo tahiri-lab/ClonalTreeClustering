@@ -1,0 +1,72 @@
+4
+HGT 1 / 4  Trivial
+HGT 1 / 12  Trivial
+From branch 3602932--53 to branch 54--53
+DIRECT : RF = 11 , LS = 0.000 , BD = 25.0
+REVERSE: RF = 11 , LS = 0.000 , BD = 25.0
+HGT 2 / 4  Trivial
+HGT 2 / 12  Trivial
+From branch 59--60 to branch 142104--60
+DIRECT : RF = 11 , LS = 0.000 , BD = 25.0
+REVERSE: RF = 11 , LS = 0.000 , BD = 25.0
+HGT 3 / 4  Trivial
+HGT 3 / 12  Trivial
+From branch 349302--78 to branch 48543--78
+DIRECT : RF = 11 , LS = 0.000 , BD = 25.0
+REVERSE: RF = 11 , LS = 0.001 , BD = 25.0
+HGT 4 / 4  Trivial
+HGT 4 / 12  Trivial
+From branch 599563--66 to branch 599560--66
+DIRECT : RF = 11 , LS = 0.001 , BD = 25.0
+REVERSE: RF = 11 , LS = 0.000 , BD = 25.0
+RF = 8 , LS = 0.001 , BD = 20.5
+3
+HGT 1 / 3  Trivial
+HGT 5 / 12  Trivial
+From branch 3602932--53 to branch 56--53
+DIRECT : RF = 7 , LS = 0.000 , BD = 15.0
+REVERSE: RF = 7 , LS = 0.001 , BD = 15.0
+HGT 2 / 3  Trivial
+HGT 6 / 12  Trivial
+From branch 78--77 to branch 46404--77
+DIRECT : RF = 7 , LS = 0.000 , BD = 19.0
+REVERSE: RF = 7 , LS = 0.000 , BD = 19.0
+HGT 3 / 3  Trivial
+HGT 7 / 12  Trivial
+From branch 64--65 to branch 66--65
+DIRECT : RF = 7 , LS = 0.000 , BD = 18.5
+REVERSE: RF = 7 , LS = 0.001 , BD = 18.5
+RF = 5 , LS = 0.000 , BD = 11.5
+2
+HGT 1 / 2  Trivial
+HGT 8 / 12  Trivial
+From branch 732543--53 to branch 3602932--53
+DIRECT : RF = 4 , LS = 0.001 , BD = 9.5
+REVERSE: RF = 4 , LS = 0.000 , BD = 9.5
+HGT 2 / 2  Trivial
+HGT 9 / 12  Trivial
+From branch 77--68 to branch 72--68
+DIRECT : RF = 4 , LS = 0.000 , BD = 7.0
+REVERSE: RF = 4 , LS = 0.000 , BD = 7.0
+RF = 3 , LS = 0.000 , BD = 5.0
+1
+HGT 1 / 1  Trivial
+HGT 10 / 12  Trivial
+From branch 11394--53 to branch 732543--53
+DIRECT : RF = 2 , LS = 0.000 , BD = 3.5
+REVERSE: RF = 2 , LS = 0.000 , BD = 3.5
+RF = 2 , LS = 0.000 , BD = 3.5
+1
+HGT 1 / 1  Trivial
+HGT 11 / 12  Trivial
+From branch 336671--51 to branch 11335--51
+DIRECT : RF = 1 , LS = 0.000 , BD = 1.5
+REVERSE: RF = 1 , LS = 0.000 , BD = 1.5
+RF = 1 , LS = 0.000 , BD = 1.5
+1
+HGT 1 / 1  Trivial
+HGT 12 / 12  Trivial
+From branch 391650--51 to branch 336671--51
+DIRECT : RF = 0 , LS = 0.000 , BD = 0.0
+REVERSE: RF = 0 , LS = 0.000 , BD = 0.0
+RF = 0 , LS = 0.000 , BD = 0.0

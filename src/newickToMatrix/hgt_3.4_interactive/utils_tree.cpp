@@ -1685,16 +1685,16 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 	int n;                                     
 	int cpt_x;
 	// Ce sous programme permet de lire un arbre au format newick et de le transcrire dans
-	// des vecteurs arete-longueur commencant ‡ 1
-	// ATTENTION: les noms commencent ‡ 0
+	// des vecteurs arete-longueur commencant √† 1
+	// ATTENTION: les noms commencent √† 0
 	// 7 octobre 2004
 	// Elmaestro
 
 	// TODO: Add your command handler code here
 	int i,j,j1,k, a, a1, a2,a3, VertexNumber,numero;
 	char symbol, *string, *string1, *string2, *string4;
-	int taxaPos; // le nombre de taxas recupÈrÈ
-	int aretePos; // le nombre d'aretes recupÈrÈ
+	int taxaPos; // le nombre de taxas recup√©r√©
+	int aretePos; // le nombre d'aretes recup√©r√©
 	char symbolOld =' ';
 	int zz, xx,jj,ii;
 	double longueur;
@@ -1752,7 +1752,7 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 	
 	cpt=0;
 
-	// verification des aritÈs de l'arbre
+	// verification des arit√©s de l'arbre
 	if (j1!=j) { printf("Incorrect Newick file format. Number of right parentheses must be equal to number of left parentheses."); exit(FAIL);}
 	//else if (j!=n-2) { printf("Incorrect Newick file format. Only trees with vertices of degree 1 and 3 are allowed by T-REX."); fclose (data); exit(FAIL);}
 
@@ -1835,7 +1835,7 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 	k=0; VertexNumber=n;
 	//a1 = 0;
 	//a2 = 0;
-	taxaPos =1;    // nous allons commencer ‡ mettre les taxas ‡ la position 1
+	taxaPos =1;    // nous allons commencer √† mettre les taxas √† la position 1
 	aretePos = 1;
 	boot_value=0;
 	
@@ -1845,15 +1845,15 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 		a2 = 0;
 		while( string[a2] != ')')  // traiter la paire () la plus profonde
 		{
-			if(string[a2] == '(') a1 = a2;  // retrouver ;a parenthËse ouvrante
+			if(string[a2] == '(') a1 = a2;  // retrouver ;a parenth√®se ouvrante
 			a2++;
 		}
 		
 
 		// a   => contient la longueur de la chaine
-		// a1  => contient le debut d'un noeud ‡ traiter
-		// a2  => contient la fin d'un noeud ‡ traiter
-		// a3  => dÈlimite le noeud et sa longueur
+		// a1  => contient le debut d'un noeud √† traiter
+		// a2  => contient la fin d'un noeud √† traiter
+		// a3  => d√©limite le noeud et sa longueur
 
 		zz = a1+1;
 		VertexNumber++;  // augmenter le nombre de noeuds
@@ -1886,12 +1886,16 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 						while(string[jj] != ':')
 							string4[cpt_x++] = string[jj++];
 						string4[cpt_x] = '\0';
+
+						strcpy (lesNoms[taxaPos-1],string4);
+						numero = taxaPos;
+						taxaPos++;  // augmenter le nombre de taxas pris
 					}
 					
 				}
 				else
 				{
-					// on recupËre le nom du taxa
+					// on recup√®re le nom du taxa
 
 					for(jj = zz; jj < ii; jj++)
 					{
@@ -1958,7 +1962,7 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 		string = string2;
 		string2 = tempString;
 		tempString = 0;
-		a = xx;  // mettre la longueur ‡ jour 
+		a = xx;  // mettre la longueur √† jour 
 
 	} // fin du while pour traiter toute la string
 
@@ -2074,16 +2078,16 @@ int lectureNewick1(const char * newick, long int * ARETE, double * LONGUEUR, cha
 	int n;                                     
 
 	// Ce sous programme permet de lire un arbre au format newick et de le transcrire dans
-	// des vecteurs arete-longueur commencant ‡ 1
-	// ATTENTION: les noms commencent ‡ 0
+	// des vecteurs arete-longueur commencant √† 1
+	// ATTENTION: les noms commencent √† 0
 	// 7 octobre 2004
 	// Elmaestro
 
 	// TODO: Add your command handler code here
 	int i,j,j1,k, a, a1, a2,a3, VertexNumber,numero;
 	char symbol, *string, *string1, *string2/* *string3,c ,**Et*/;
-	int taxaPos; // le nombre de taxas recupÈrÈ
-	int aretePos; // le nombre d'aretes recupÈrÈ
+	int taxaPos; // le nombre de taxas recup√©r√©
+	int aretePos; // le nombre d'aretes recup√©r√©
 	char symbolOld =' ';
 	int zz, xx,jj,ii;
 	double longueur;
@@ -2124,7 +2128,7 @@ int lectureNewick1(const char * newick, long int * ARETE, double * LONGUEUR, cha
 	
 	cpt=0;
 
-	// verification des aritÈs de l'arbre
+	// verification des arit√©s de l'arbre
 	if (j1!=j) { printf("Incorrect Newick file format. Number of right parentheses must be equal to number of left parentheses."); exit(FAIL);}
 	//else if (j!=n-2) { printf("Incorrect Newick file format. Only trees with vertices of degree 1 and 3 are allowed by T-REX."); fclose (data); exit(FAIL);}
 
@@ -2205,7 +2209,7 @@ int lectureNewick1(const char * newick, long int * ARETE, double * LONGUEUR, cha
 	k=0; VertexNumber=n;
 	//a1 = 0;
 	//a2 = 0;
-	taxaPos =1;    // nous allons commencer ‡ mettre les taxas ‡ la position 1
+	taxaPos =1;    // nous allons commencer √† mettre les taxas √† la position 1
 	aretePos = 1;
 	while (string[0] == '(')   // traiter toute la chaine
 	{
@@ -2213,15 +2217,15 @@ int lectureNewick1(const char * newick, long int * ARETE, double * LONGUEUR, cha
 		a2 = 0;
 		while( string[a2] != ')')  // traiter la paire () la plus profonde
 		{
-			if(string[a2] == '(') a1 = a2;  // retrouver ;a parenthËse ouvrante
+			if(string[a2] == '(') a1 = a2;  // retrouver ;a parenth√®se ouvrante
 			a2++;
 		}
 		
 
 		// a   => contient la longueur de la chaine
-		// a1  => contient le debut d'un noeud ‡ traiter
-		// a2  => contient la fin d'un noeud ‡ traiter
-		// a3  => dÈlimite le noeud et sa longueur
+		// a1  => contient le debut d'un noeud √† traiter
+		// a2  => contient la fin d'un noeud √† traiter
+		// a3  => d√©limite le noeud et sa longueur
 
 		zz = a1+1;
 		VertexNumber++;  // augmenter le nombre de noeuds
@@ -2245,7 +2249,7 @@ int lectureNewick1(const char * newick, long int * ARETE, double * LONGUEUR, cha
 				}
 				else
 				{
-					// on recupËre le nom du taxa
+					// on recup√®re le nom du taxa
 
 					for(jj = zz; jj < ii; jj++)
 					{
@@ -2297,7 +2301,7 @@ int lectureNewick1(const char * newick, long int * ARETE, double * LONGUEUR, cha
 		string = string2;
 		string2 = tempString;
 		tempString = 0;
-		a = xx;  // mettre la longueur ‡ jour 
+		a = xx;  // mettre la longueur √† jour 
 
 	} // fin du while pour traiter toute la string
 
@@ -2717,7 +2721,7 @@ void RechercherBipartitionSansRacine(long int *ARETE,double ** DIST,double ** Ad
 	}	
 			
 			
-	//== liberation de la mÈmoire
+	//== liberation de la m√©moire
 	for (i=0;i<=2*n;i++)
 		free(Adjacence[i]);
 	free(Adjacence);

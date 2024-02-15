@@ -330,8 +330,8 @@ void Floyd(double ** Adjacence , double ** DIST,int n,int kt)
 {
 	int i,j,k;
 
-	for(i=1;i<=2*n-2-kt;i++)
-		for(j=1;j<=2*n-2-kt;j++)
+	for(i=1;i<=2*n-1-kt;i++)
+		for(j=1;j<=2*n-1-kt;j++)
 		{
 			if(i==j)
 				DIST[i][j] = 0;
@@ -339,13 +339,15 @@ void Floyd(double ** Adjacence , double ** DIST,int n,int kt)
 				DIST[i][j] = Adjacence[i][j];
 		}
 
-		for(i=1;i<=2*n-2-kt;i++)
-			for(j=1;j<=2*n-2-kt;j++)
-				for(k=1;k<=2*n-2-kt;k++)
+
+		for(i=1;i<=2*n-1-kt;i++)
+			for(j=1;j<=2*n-1-kt;j++)
+				for(k=1;k<=2*n-1-kt;k++)
 				{
 					if((DIST[j][i] + DIST[i][k]) < DIST[j][k])
 						DIST[j][k] = DIST[j][i] + DIST[i][k];
 				}
+				
 }
 
 void Floyd(double ** Adjacence , double ** DIST,double **DIST2,int n,int kt)
@@ -446,16 +448,23 @@ void loadAdjacenceMatrix( double **Adjacence, long int *ARETE, double *LONGUEUR,
 	
 	int i,j;
 	
-	for(i=1;i<=2*size-2;i++) /*/(n+1)*/
-		for(j=1;j<=2*size-2;j++){
+	for(i=1;i<=2*size-1;i++) /*/(n+1)*/
+	{	for(j=1;j<=2*size-1;j++){
 			Adjacence[i][j] = Adjacence[j][i] = INFINI;
       //printf("i=%d,j=%d",i,j);
-}
-	for(i=1;i<=2*size-3-kt;i++){
+		}
+	}
+	
+	for(i=1;i<=2*size-2-kt;i++){
 		//printf("\ni=%d-%d, size=%d",i,(2*size-3-kt),size);
 		Adjacence[ARETE[2*i-2]][ARETE[2*i-1]] = LONGUEUR[i-1];//(LONGUEUR[i-1]>5*epsilon)?LONGUEUR[i-1]:5*epsilon;
 		Adjacence[ARETE[2*i-1]][ARETE[2*i-2]] = LONGUEUR[i-1]; //(LONGUEUR[i-1]>5*epsilon)?LONGUEUR[i-1]:5*epsilon;
 	}
+	
+	//int last_br = 2*(2*size-2)-kt;
+	//Adjacence[ARETE[last_br]][ARETE[last_br-1]] = LONGUEUR[2*size-2];
+	//Adjacence[ARETE[last_br-1]][ARETE[last_br]] = LONGUEUR[2*size-2];
+	
 }
 
 //=====================================================
@@ -1958,6 +1967,7 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 
 		// remplacer string par string2 en remplacant les pointeurs
 		
+		//printf("\nNewick format %s", string);
 		tempString = string;
 		string = string2;
 		string2 = tempString;
@@ -1965,6 +1975,7 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 		a = xx;  // mettre la longueur à jour 
 
 	} // fin du while pour traiter toute la string
+
 
 	int root_existance = -1;
 	for( jj=n;jj>0;jj--){
@@ -1988,7 +1999,7 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 			LONGUEUR[i-1] = 5*epsilon;
 		}
 	}
-	for(i=1;i<=2*(2*n-3);i++){
+	for(i=1;i<=2*(2*n-2);i++){
 		ARETE[i-1] = ARETE[i];
 	}
 	
@@ -2001,15 +2012,15 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 			if(ARETE[2*i-2] == root_existance)
 				noeud_interne = ARETE[2*i-1];
 		}
-		printf("\n[%d,%d]",noeud_interne,root_existance);
+		//printf("\nVERSION 1[%d,%d]",noeud_interne,root_existance);
 		for(i=1;i<=2*n-3;i++){
 			if((ARETE[2*i-1] != root_existance) && (noeud_interne == ARETE[2*i-2])){
 				LONGUEUR[i-1] = 50;
-				printf("\n[%d,%d]",noeud_interne,ARETE[2*i-1]);
+				//printf("\nVERSION 2[%d,%ld]",noeud_interne,ARETE[2*i-1]);
 			}
 			if((ARETE[2*i-2] != root_existance) && (noeud_interne == ARETE[2*i-1])){
 				LONGUEUR[i-1] = 50;
-				printf("\n[%d,%d]",noeud_interne,ARETE[2*i-2]);
+				//printf("\nVERSION 3[%d,%ld]",noeud_interne,ARETE[2*i-2]);
 			}
 		}
 		
@@ -2021,7 +2032,7 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 
 	printf("\nListe des branches :");
 	for(i=1;i<=2*n-3;i++){
-		printf("\n%d-%d --> %lf",ARETE[2*i-1],ARETE[2*i-2],LONGUEUR[i-1]);
+		printf("\n%ld-%ld --> %lf",ARETE[2*i-1],ARETE[2*i-2],LONGUEUR[i-1]);
 	}
     printf("\nFin de la liste\n");
   
@@ -2048,6 +2059,7 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 		if(ARETE[2*i-1] == deg1){ ARETE[2*i-1] = deg2; pos_racine=i; break;} 
 		if(ARETE[2*i-2] == deg1){ ARETE[2*i-2] = deg2; pos_racine=i; break;} 
 	}
+	
     if(pos_racine != -1){
         LONGUEUR[pos_racine-1] = 100;
     }
@@ -2064,7 +2076,6 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 	//free(string3);
 
 	(*kt) = 2*n-3 - (*kt);
-    
     
 	return pos_racine;
 

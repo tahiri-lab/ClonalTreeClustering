@@ -2122,7 +2122,7 @@ int findAllMinimalScenario(struct InputTree SpeciesTree , struct InputTree GeneT
 /*	
 	int encore=1;
 	struct TreeHGT *aTree = (struct TreeHGT*)malloc(sizeof(struct TreeHGT));  //= sommet de l'arbre
-	struct TreeHGT *courant;												  //= pointeur utilisé pour parcourrir l'arbre
+	struct TreeHGT *courant;												  //= pointeur utilisï¿½ pour parcourrir l'arbre
 	aTree->parent = NULL;													  //= le sommet n'a pas de parent
 		
 	struct DescTree * DTGene = (struct DescTree*)malloc((2*GeneTree.size-2-GeneTree.kt+1)*sizeof(struct DescTree));
@@ -2938,7 +2938,7 @@ void ReduceTree(struct InputTree SpeciesTree,struct InputTree GeneTree,struct In
 		}
 
 		
-		//== ici on test les sous-ensembles 2 par 2, si un est le sous-ensemble de l'autre, il n'est pas necessaire de considérer
+		//== ici on test les sous-ensembles 2 par 2, si un est le sous-ensemble de l'autre, il n'est pas necessaire de considï¿½rer
 		//== ce dernier.
 		for(i=1;i<=2*SpeciesTree.size-2-SpeciesTree.kt;i++){
 			for(j=1;j<=2*SpeciesTree.size-2-SpeciesTree.kt;j++){
@@ -3734,7 +3734,7 @@ int addRoot(struct InputTree *aTree,struct InputTree *refTree,const char * messa
 	
 	//printf("\nchoix = %d",choix);
 	if(listLeaves != NULL){
-		//== sauvegarder la liste des feuilles de chaque coté de l'arete.
+		//== sauvegarder la liste des feuilles de chaque cotï¿½ de l'arete.
 		if(listLeaves[0] == -1){
 			for(i=1;i<=aTree->size;i++)
 				if(aTree->ADD[i][aTree->ARETE[2*choix-1]] < aTree->ADD[i][aTree->ARETE[2*choix-2]])
@@ -3822,7 +3822,7 @@ int readInput(int Type, const char *file,struct InputTree * aTree){
 	//= lecture de la taille des matrices
 	fscanf(in,"%d",&size);
 
-	//= allocation de la mémoire
+	//= allocation de la mï¿½moire
 	//allocMemmory(aTree,1);
 	aTree->size = size;
 	size++; // more space for the root

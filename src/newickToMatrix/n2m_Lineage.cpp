@@ -38,8 +38,11 @@ int nbNodesNewick(const char * newick, int& nodes){
 	do{
 		symbol = newick[i];
 		i++;
-		if (symbol == ':' && symbolOld != ')') n++;
-		if(symbolOld == ')' && symbol == ':') nodes++;
+		if (symbol == ':'){
+			if(symbolOld != ')' && symbolOld != ',') n++;
+			else nodes++;
+		}
+		//if(symbolOld == ')' && symbol == ':') nodes++;
 
 		//if(symbol == ':' && symbolOld !=')' && temoin != 1) n++;
 		if(symbol >= '0' && symbol <= '9' && symbolOld==')') temoin=1;
@@ -48,6 +51,108 @@ int nbNodesNewick(const char * newick, int& nodes){
 	}while(symbol != ';');
 
 	return n;
+}
+
+int getNamesNaive(const char * newick, char ** lesNoms, char * newStr){
+
+	int i = 0, j, k, x = 0, y = 0, idStart = 0, idStop = 0, num = 0, root = 1;
+	char symbol, *numero;
+	char ** namesTemp;
+	namesTemp = (char**)malloc(20*sizeof(char*));
+	numero = (char*)malloc((100) * sizeof(char));
+
+	for(k = 0; k <= 10; k++)
+		namesTemp[k] = (char*)malloc(50);
+
+
+	//printf("\n nouvelle str de base %s", newStr);
+
+	do{
+
+		symbol = newick[i];
+		//printf("\n je peux au moins rentrer dans la boucle ou pas ? %d", i);
+
+		if((symbol == '(') || (symbol == ',') || (symbol == ')'))
+		{
+			idStart = i;
+		}
+
+		if(symbol == ':')
+		{
+			// Write in the new string everything between the ":" and the last character before the name of the node.
+
+			//printf("\n début de chaîne %d", idStop);
+			//printf("\n fin de chaîne %d", idStart);
+			for(j = idStop; j <= idStart; j++)
+			{
+				newStr[x++] = newick[j];
+			}
+
+
+			// Only retrieve the name of the node and assign a number if the node already has a name.
+			if(i != idStart+1)
+			{
+				// If the node is "naive" (root), its name goes in the first position of the vector and the number assigned is 0.
+				// Also change root variable to 0 for later use. 
+				if(newick[idStart+1] == 'n')
+				{
+					newStr[x++] = '0';
+					for(j = 1; j <= 5; j++)
+					{
+						namesTemp[0][y++] = newick[idStart+j];
+					}
+					root = 0;
+				}
+				
+				else
+				{
+					num++;
+
+					for(j = idStart+1; j < i; j++)
+					{
+						namesTemp[num][y++] = newick[j];
+					}
+
+					namesTemp[num][y++] = '\0';
+					itoa_(num, numero, 10);
+					newStr[x++] = numero[0];				
+				}
+				y = 0;
+
+				
+			}
+			idStop = i;
+		}
+		i++;
+
+	}while(symbol != ';');
+
+
+	// Write the last information of the newick line in the new string.
+	for(j = idStop; j <= idStart+1; j++)
+	{
+		newStr[x++] = newick[j];
+	}
+
+	int names = 0;
+
+	
+	//printf("\n SORTIE BOUCLE VERIFICATION %s", newStr);
+
+	// If the naive cell is present root = 0 (otherwise root = 1)
+	// This allows us to know at what line to start parsing the namesTemp tab.
+	for(i = root; i <= num; i++)
+	{
+		for(j = 0; j <= strlen(namesTemp[i]); j++)
+		{
+			lesNoms[names][j] = namesTemp[i][j];
+		}
+		names++;
+		//printf("\nverification qu'on a au moins les noms, %s", namesTemp[i]);
+	}
+	//printf("\n SORTIE BOUCLE VERIFICATION %s", newStr);
+
+	return names;
 }
 
 //========================================================================================================
@@ -83,6 +188,7 @@ void newickToMatrix(const char *newick,FILE *out){
 	long int ** ARETEBcell;
 	double *  LONGUEUR;
 	char   ** NAMES;
+	char * newString;
 	double ** ADJACENCE;
 	double ** ADD;
 	int kt;
@@ -90,6 +196,8 @@ void newickToMatrix(const char *newick,FILE *out){
 	int size = nbNodesNewick(newick, nbNodes);
 	int fullSize = size + nbNodes;
 	printf("Nb nodes avec noms %d et nodes sans noms %d", size, nbNodes);
+
+	newString = (char*)malloc(100000*sizeof(char));
 	
 	ADD = (double**)malloc(2*size*sizeof(double*));
 	ADJACENCE = (double**)malloc(2*size*sizeof(double*));
@@ -97,7 +205,9 @@ void newickToMatrix(const char *newick,FILE *out){
 		ADD[i] = (double*)malloc(2*size*sizeof(double));
 		ADJACENCE[i] = (double*)malloc(2*size*sizeof(double));
 	}
+
 	LONGUEUR = (double*)malloc((4*(size))*sizeof(double));
+
 
 	ARETEBcell = (long int**)malloc(fullSize*sizeof(long int));
 	for(i = 0; i <= fullSize; i++)
@@ -108,65 +218,48 @@ void newickToMatrix(const char *newick,FILE *out){
 	//Temporary method before finding better solution to store names somewhere
 	NAMES=(char**)malloc(2*size*sizeof(char*));
 	for(i=0;i<=size;i++)
-	{
 		NAMES[i] = (char*)malloc(50);
-		NAMES[i][0] = 's';
-		NAMES[i][1] = 'e';
-		NAMES[i][2] = 'q';
-	}
+	int test = getNamesNaive(newick, NAMES, newString);
+	
+	for(i=0; i<size; i++){ printf("\n %s\t %d", NAMES[i], i); }
+
 	
 	printf("\nici");	
-	pos_racine = lectureNewickBcell(newick,ARETEBcell,LONGUEUR,NAMES,&kt);
+	pos_racine = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt);
 
-	//for(i=0; i<size; i++){ printf("\n %lf\t %d", LONGUEUR[i], i); }
 	printf("\n allo");
     loadAdjacenceMatrixLineage(ADJACENCE,ARETEBcell,LONGUEUR,size,kt);
-    printf("le \n");
-
-	//printf("\nListe toutes les branches :");
-	//for(i=0; i<=size; i++) {printf("\n ARETE %d\t %ld", i, ARETEBcell[i][0]);}
-	//printf("\nListe toutes les distances :");
-	//for(i = 0; i <= size+nbNodes; i++) {printf("\n LONGUEUR %d\t %f", i, LONGUEUR[i]);}
-
+	printf("le \n");
 
     Floyd(ADJACENCE,ADD,size,kt); 
-    	printf("\n monde \n");
+    printf("\n monde \n");
 	
-	/*for(i=0; i<=size; i++){
+	for(i=0; i<=size; i++){
 		for(j=0; j<=size; j++){
-			printf("%lf \t", ADJACENCE[i][j]);
+			printf("%lf \t", ADD[i][j]);
 		}
 		printf("\n");
-	}*/
+	}
 
 
-	//if(pos_racine != -1){
-		//=recherche de la plus longue taille de nom d'especes
-		int max_taille=0;
-		for(j=1;j<=size;j++){
-			max_taille = (strlen(NAMES[j])>max_taille)?strlen(NAMES[j]):max_taille;
-		}
-		
-		/*for(i=size+1; i<=2*size-2; i++){
-			//char * c = i;
-			char c = static_cast<char>(i);
-			NAMES[i] = c;
-		}
-		for(i=1; i<=2*size; i++){printf("\n le nom : %s", NAMES[i]);}*/
+	int max_taille=0;
+	for(j=1;j<=size;j++){
+		max_taille = (strlen(NAMES[j])>max_taille)?strlen(NAMES[j]):max_taille;
+	}
 
 
-		fprintf(out,"\n%d",size);
-		for(i = 1; i <= size; i++){
-			fprintf(out,"\n%s %d",NAMES[i], i);
-			if(strlen(NAMES[i])<max_taille){
-				for(j = strlen(NAMES[i]); j <= max_taille; j++){
-					fprintf(out," ");
-				}
-			}
-			for(j = 1; j <= fullSize; j++){
-				fprintf(out,"  %3.5lf",ADD[i][j]);
+	fprintf(out,"\n%d",size);
+	for(i = 0; i <= size; i++){
+		fprintf(out,"\n%s",NAMES[i]);
+		if(strlen(NAMES[i])<max_taille){
+			for(j = strlen(NAMES[i]); j <= max_taille; j++){
+				fprintf(out," ");
 			}
 		}
+		for(j = 0; j <= fullSize; j++){
+			fprintf(out,"  %3.5lf",ADD[i][j]);
+		}
+	}
 	//}
 }
 

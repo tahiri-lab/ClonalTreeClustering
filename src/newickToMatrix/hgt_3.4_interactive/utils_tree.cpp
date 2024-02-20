@@ -330,19 +330,19 @@ void Floyd(double ** Adjacence , double ** DIST,int n,int kt)
 {
 	int i,j,k;
 
-	for(i=1;i<=2*n-1-kt;i++)
-		for(j=1;j<=2*n-1-kt;j++)
+	for(i = 0; i <= n; i++)
+		for(j = 0; j <= n; j++)
 		{
-			if(i==j)
+			if(i == j)
 				DIST[i][j] = 0;
 			else
 				DIST[i][j] = Adjacence[i][j];
 		}
 
 
-		for(i=1;i<=2*n-1-kt;i++)
-			for(j=1;j<=2*n-1-kt;j++)
-				for(k=1;k<=2*n-1-kt;k++)
+		for(i = 0; i <= n; i++)
+			for(j = 0; j <= n; j++)
+				for(k = 0; k <= n; k++)
 				{
 					if((DIST[j][i] + DIST[i][k]) < DIST[j][k])
 						DIST[j][k] = DIST[j][i] + DIST[i][k];
@@ -464,6 +464,23 @@ void loadAdjacenceMatrix( double **Adjacence, long int *ARETE, double *LONGUEUR,
 	//int last_br = 2*(2*size-2)-kt;
 	//Adjacence[ARETE[last_br]][ARETE[last_br-1]] = LONGUEUR[2*size-2];
 	//Adjacence[ARETE[last_br-1]][ARETE[last_br]] = LONGUEUR[2*size-2];
+	
+}
+
+void loadAdjacenceMatrixLineage( double **Adjacence, long int **ARETEB, double *LONGUEUR,int size,int kt){
+	
+	int i,j;
+	
+	for(i = 0; i <= size; i++) /*/(n+1)*/
+	{	for(j = 0; j <= size; j++){
+			Adjacence[i][j] = Adjacence[j][i] = INFINI;
+		}
+	}
+	
+	for(i = 0; i <= size; i++){
+		Adjacence[ARETEB[i][0]][ARETEB[i][1]] = LONGUEUR[i];
+		Adjacence[ARETEB[i][1]][ARETEB[i][0]] = LONGUEUR[i];
+	}
 	
 }
 
@@ -1967,7 +1984,7 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 
 		// remplacer string par string2 en remplacant les pointeurs
 		
-		//printf("\nNewick format %s", string);
+		printf("\nNewick format %s", string2);
 		tempString = string;
 		string = string2;
 		string2 = tempString;
@@ -2080,6 +2097,247 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 	return pos_racine;
 
 }
+
+//===============================================================================================
+//
+//===============================================================================================
+int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEUR, char ** lesNoms, int *kt)
+{
+	/*	19-02-2024 Modifications by AnnArtiges and comments in English
+	This function is supposed to read a lineage tree in the Newick format and return the distances between all nodes in the tree.
+	It is based on the previous "lectureNewick" function (see above).
+	*/
+
+	// TODO: Add your command handler code here
+	int n;                                     
+	int cpt_x;
+	int i, j, k, a, a1, a2, a3, VertexNumber, numero, idSeq, ancetre, suiv;
+	char symbol, *string, *string1, *string2, *string4, *anc;
+	char symbolOld =' ';
+	int zz, xx, jj, ii;
+	double longueur, dist_root = 0;		// Consider the naive cell as the root of the lineage tree
+	char * tempString;
+	int cpt=0;
+	string4 = (char*)malloc((100000) * sizeof(char));
+
+	int temoin = 0;
+	int cpt_parenthese = 0;
+
+	//Correctness of the Newick format verification //Done in separate functions somewhere
+	i=0;
+	n = 0;
+
+	do
+	{
+		symbol = newick[cpt++];
+		if (symbol==':') i++;
+		if(symbol == ':' && symbolOld !=')') n++;
+		if(symbol >= '0' && symbol <= '9' && symbolOld==')') temoin=1;
+		if(symbol==':' && temoin==1) temoin=0;
+		symbolOld = symbol;
+	}  while(symbol != '\0');
+
+	cpt=0;
+
+	if(i<=2*n-3)(*kt)=i;
+	else (*kt)=2*n-3;
+
+	k=0;
+	a=0;
+	cpt=0;
+	VertexNumber = n - 1;
+	int pos_racine = -1;
+
+	string = (char*)malloc((100000) * sizeof(char));
+	string2 = (char*)malloc((100000) * sizeof(char));
+	string1 = (char*)malloc((100000) * sizeof(char));
+	anc = (char*)malloc((100) * sizeof(char));
+
+	do{		
+		symbol = newick[cpt++];
+
+		/*
+		All cells are marked with the identifier of their sequence only to avoid parsing for two long and for easier storing for the matrix later on.
+		The naive cell (root) is marked with 'N' to separate it from the rest.
+		*/
+		if (symbol == 'n') {
+			string[a++] = 'N';
+		}
+		else if ((symbol != ' ')&&(symbol != '\n')&&(symbol != '\t')&&(symbol != 's')&&(symbol != 'e')&&(symbol != 'q')&&(symbol != 'a')&&(symbol != 'i')&&(symbol != 'v'))
+		{
+			string[a++] = symbol;
+
+		}
+	}while(symbol !='\0');
+
+
+	numero = 0;
+	while (string[0] == '(')   // traiter toute la chaine
+	{
+		printf("\n");
+		//printf("\n ENTRÉE BOUCLE VERIFICATION : %s", string);
+		a1 = 0;
+		a2 = 0;
+		temoin = 0;
+		while( string[a2] != ')')  // traiter la paire () la plus profonde
+		{
+			if(string[a2] == '('){a1 = a2;}  // retrouver la parenthèse ouvrante
+			a2++;
+		}
+
+		suiv = int(a2) + 1;
+		i = 0;
+		zz = a1 +1;
+		
+		/*Retrieve the name of the ancestor-node.
+		 Specifically to get whether or not it is the naive cell, in which case we retrieve the distance associated and store it in the dist_root variable.*/
+		
+		if(string[suiv] == ':')
+		{
+			temoin = 1;
+			VertexNumber++;
+			ancetre = VertexNumber;
+		}
+		else
+		{
+			while(string[suiv] != ':')
+			{
+				anc[i++] = string[suiv];
+				suiv++;
+			}
+			anc[i++] = '\0';
+
+			if(anc[0] == 'N')
+			{
+				suiv++;
+				i = 0;
+				temoin = 2;
+				while(string[suiv] != ')')
+				{
+					string1[i++] = string[suiv];
+					suiv++;
+				}
+				string1[xx++] = '\0';
+				dist_root = atof(string1);
+				ancetre = 0;
+			}
+			else {
+				ancetre = atoi(anc);
+				//printf("\nfonctionne 3.61111 %s", typeid(anc).name());
+			}
+		}
+
+		//printf("\ndistance a naive %f et ancetre %d", dist_root, ancetre);
+
+		for ( ii = a1+1; ii <= a2; ii++)
+		{
+			if (string[ii] == ':')
+			{
+				xx = 0;
+				a3 = ii+1;
+
+				for(jj = zz; jj <= ii; jj++)
+				{
+					string1[xx] = string[jj];
+					xx++;
+				}
+				string1[xx++] = '\0';
+				idSeq = atof(string1);
+
+			}
+
+			else if(string[ii] == ','  || string[ii] == ')')
+			{
+				xx = 0;
+				zz = ii +1;
+				for ( jj = a3; jj < ii; jj++)
+				{
+					string1[xx++] = string[jj]; 
+				}
+				string1[xx++] = '\0';
+				longueur = atof(string1);
+
+				/*
+				The ARETEB contains the nodes pair (child-ancestor) in order of processing. This organisation will make it easier to build the distance matrix later.
+				It also requires less juggling than the previous function.
+				*/
+				ARETEB[numero][0] = idSeq;
+				ARETEB[numero][1] = ancetre;
+				LONGUEUR[numero] = longueur + dist_root;
+
+				//printf("\nAffiche les aretes %ld --- %ld = %f", ARETEB[numero][0], ARETEB[numero][1], LONGUEUR[numero]);
+				numero++;
+
+			}
+
+		}
+
+		// fin for pour traiter noeud
+		//transcrire la nouvelle chaine
+
+		if(temoin==2)
+		{
+			string[0] = 'N';
+		}
+
+		xx = 0;
+		for ( jj = 0; jj < (int)a1; jj++)
+		{ string2[xx++] = string[jj]; }
+
+		/*
+		Since many internal nodes are already named in lineage trees there is no need to always add a name for the ancestor node.
+		We only add it if the node was not named before, otherwise the ancestor node will be named as in the sequence.
+		*/
+		if(temoin == 1)
+		{
+			itoa_(VertexNumber,string1,10);   // 
+			for( jj = 0; jj < (int) strlen(string1); jj++)
+			{ string2[xx++] = string1[jj]; }
+		}
+		
+		// transcrire la fin
+		for( jj = a2+1; jj <= a; jj++)
+		{
+			string2[xx++] = string[jj];
+		}
+		
+		tempString = string;
+		string = string2;
+		string2 = tempString;
+		tempString = 0;
+		//printf("\n SORTIE BOUCLE VERIFICATION %s", string);
+
+		a = xx;  // mettre la longueur à jour 
+
+	} // fin du while pour traiter toute la string
+
+
+	/*for(i=1;i<=2*n-3;i++){
+		LONGUEUR[i-1] = LONGUEUR[i];
+		if(LONGUEUR[i-1] < 5*epsilon){
+			LONGUEUR[i-1] = 5*epsilon;
+		}
+	}*/
+
+	printf("\nListe des branches :");
+	for(i=0;i<=numero-1;i++){
+		printf("\n%ld-%ld --> %lf",ARETEB[i][0],ARETEB[i][1],LONGUEUR[i]);
+	}
+    printf("\nFin de la liste\n");
+
+	free(string);
+	free(string1);
+	free(string2);
+	//free(string3);
+
+	(*kt) = 2*n-3 - (*kt);
+    
+	return pos_racine;
+
+}
+
+
+
 
 //===============================================================================================
 //

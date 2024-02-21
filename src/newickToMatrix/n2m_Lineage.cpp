@@ -26,7 +26,44 @@
 #define FALSE 0
 #define INFINI 999999.99
 
-void newickToMatrix(const char *newick,FILE *out);
+void newickToMatrixLineage(const char *newick,FILE *out);
+
+// Function to check the Newick Format and detect any errors before parsing the sequence for the distance matrix
+void checkFormat(const char *newickLineageLine){
+
+  int i = 0, j = 0, k = 0, a = 0;
+  char symbol;
+  int cpt = 0;
+
+
+  do
+	{
+		symbol = newickLineageLine[cpt++];
+
+		if (symbol == ':') i++;
+
+    if (symbol == '(') j++;
+    else if (symbol == ')') j--;
+
+    if (symbol == ';') k++;
+
+    if (symbol == '%') a++; 
+
+	}  while(symbol != '\0');
+
+
+  if (newickLineageLine[0] != '(') { printf("Incorrect Newick file format. Newick string must begin with a '(' character."); exit(FAIL);}
+
+  if (i == 0) { printf("Incorrect Newick file format. Edge lengths must be indicated after a ':' characters."); exit(FAIL);}
+
+  if (j != 0) { printf("Incorrect Newick file format. Number of right parentheses must be equal to number of left parentheses."); exit(FAIL); }
+
+  if (k == 0) { printf("Incorrect Newick file format. Newick string must be followed by a ';' character."); exit(FAIL);}
+	else if (k > 1) { printf("Incorrect Newick file format. Newick string must contain (in the end) only one ';' character."); exit(FAIL);}
+
+  if (a>0) { printf("Incorrect Newick file format. Newick string cannot contain \'%%\' character."); exit(FAIL);}
+
+}
 
 int nbNodesNewick(const char * newick, int& nodes){
 	int i=0;
@@ -42,9 +79,6 @@ int nbNodesNewick(const char * newick, int& nodes){
 			if(symbolOld != ')' && symbolOld != ',') n++;
 			else nodes++;
 		}
-		//if(symbolOld == ')' && symbol == ':') nodes++;
-
-		//if(symbol == ':' && symbolOld !=')' && temoin != 1) n++;
 		if(symbol >= '0' && symbol <= '9' && symbolOld==')') temoin=1;
 		if(symbol==':' && temoin==1) temoin=0;
 		symbolOld = symbol;
@@ -53,24 +87,22 @@ int nbNodesNewick(const char * newick, int& nodes){
 	return n;
 }
 
-int getNamesNaive(const char * newick, char ** lesNoms, char * newStr){
+int getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size){
 
-	int i = 0, j, k, x = 0, y = 0, idStart = 0, idStop = 0, num = 0, root = 1;
+	int i = 0, j, x = 0, y = 0, idStart = 0, idStop = 0, num = 0, root = 1;
 	char symbol, *numero;
 	char ** namesTemp;
 	namesTemp = (char**)malloc(20*sizeof(char*));
 	numero = (char*)malloc((100) * sizeof(char));
 
-	for(k = 0; k <= 10; k++)
-		namesTemp[k] = (char*)malloc(50);
+	for(i = 0; i <= size; i++)
+		namesTemp[i] = (char*)malloc(50);
 
-
-	//printf("\n nouvelle str de base %s", newStr);
+	i = 0;
 
 	do{
 
 		symbol = newick[i];
-		//printf("\n je peux au moins rentrer dans la boucle ou pas ? %d", i);
 
 		if((symbol == '(') || (symbol == ',') || (symbol == ')'))
 		{
@@ -81,8 +113,6 @@ int getNamesNaive(const char * newick, char ** lesNoms, char * newStr){
 		{
 			// Write in the new string everything between the ":" and the last character before the name of the node.
 
-			//printf("\n début de chaîne %d", idStop);
-			//printf("\n fin de chaîne %d", idStart);
 			for(j = idStop; j <= idStart; j++)
 			{
 				newStr[x++] = newick[j];
@@ -115,7 +145,10 @@ int getNamesNaive(const char * newick, char ** lesNoms, char * newStr){
 
 					namesTemp[num][y++] = '\0';
 					itoa_(num, numero, 10);
-					newStr[x++] = numero[0];				
+					for(y=0; y<strlen(numero); y++)
+					{
+						newStr[x++] = numero[y];
+					}			
 				}
 				y = 0;
 
@@ -136,9 +169,6 @@ int getNamesNaive(const char * newick, char ** lesNoms, char * newStr){
 
 	int names = 0;
 
-	
-	//printf("\n SORTIE BOUCLE VERIFICATION %s", newStr);
-
 	// If the naive cell is present root = 0 (otherwise root = 1)
 	// This allows us to know at what line to start parsing the namesTemp tab.
 	for(i = root; i <= num; i++)
@@ -148,9 +178,7 @@ int getNamesNaive(const char * newick, char ** lesNoms, char * newStr){
 			lesNoms[names][j] = namesTemp[i][j];
 		}
 		names++;
-		//printf("\nverification qu'on a au moins les noms, %s", namesTemp[i]);
 	}
-	//printf("\n SORTIE BOUCLE VERIFICATION %s", newStr);
 
 	return names;
 }
@@ -170,7 +198,9 @@ int main(int nargc,char **argv){
 	FILE * in = fopen(argv[1],"r");
 	FILE * out = fopen(argv[2],"w");
 	newick = readNewick(in);
-	newickToMatrix(newick,out);
+	checkFormat(newick);
+	printf("\nLe format est bon");
+	newickToMatrixLineage(newick,out);
 
 	fclose(in);
 	fclose(out);
@@ -182,7 +212,7 @@ int main(int nargc,char **argv){
 //==================================================================
 //=
 //==================================================================
-void newickToMatrix(const char *newick,FILE *out){
+void newickToMatrixLineage(const char *newick,FILE *out){
 	int i,j;
 	int pos_racine = -1;
 	long int ** ARETEBcell;
@@ -195,7 +225,7 @@ void newickToMatrix(const char *newick,FILE *out){
 	int nbNodes = 0;
 	int size = nbNodesNewick(newick, nbNodes);
 	int fullSize = size + nbNodes;
-	printf("Nb nodes avec noms %d et nodes sans noms %d", size, nbNodes);
+	printf("\nNb nodes avec noms %d et nodes sans noms %d", size, nbNodes);
 
 	newString = (char*)malloc(100000*sizeof(char));
 	
@@ -215,11 +245,12 @@ void newickToMatrix(const char *newick,FILE *out){
 		ARETEBcell[i] = (long int*)malloc(2); 
 	}
 
-	//Temporary method before finding better solution to store names somewhere
+
 	NAMES=(char**)malloc(2*size*sizeof(char*));
 	for(i=0;i<=size;i++)
 		NAMES[i] = (char*)malloc(50);
-	int test = getNamesNaive(newick, NAMES, newString);
+	//Method to retrieve the nodes' names and store them in a list
+	int test = getNamesNaive(newick, NAMES, newString, size);
 	
 	for(i=0; i<size; i++){ printf("\n %s\t %d", NAMES[i], i); }
 
@@ -228,18 +259,11 @@ void newickToMatrix(const char *newick,FILE *out){
 	pos_racine = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt);
 
 	printf("\n allo");
-    loadAdjacenceMatrixLineage(ADJACENCE,ARETEBcell,LONGUEUR,size,kt);
+    loadAdjacenceMatrixLineage(ADJACENCE,ARETEBcell,LONGUEUR,fullSize,kt);
 	printf("le \n");
 
-    Floyd(ADJACENCE,ADD,size,kt); 
+    Floyd(ADJACENCE,ADD,fullSize,kt); 
     printf("\n monde \n");
-	
-	for(i=0; i<=size; i++){
-		for(j=0; j<=size; j++){
-			printf("%lf \t", ADD[i][j]);
-		}
-		printf("\n");
-	}
 
 
 	int max_taille=0;
@@ -249,18 +273,18 @@ void newickToMatrix(const char *newick,FILE *out){
 
 
 	fprintf(out,"\n%d",size);
-	for(i = 0; i <= size; i++){
+	for(i = 0; i < fullSize; i++){
 		fprintf(out,"\n%s",NAMES[i]);
 		if(strlen(NAMES[i])<max_taille){
 			for(j = strlen(NAMES[i]); j <= max_taille; j++){
 				fprintf(out," ");
 			}
 		}
-		for(j = 0; j <= fullSize; j++){
+		for(j = 0; j < fullSize; j++){
 			fprintf(out,"  %3.5lf",ADD[i][j]);
 		}
 	}
-	//}
+
 }
 
 //===================================================================

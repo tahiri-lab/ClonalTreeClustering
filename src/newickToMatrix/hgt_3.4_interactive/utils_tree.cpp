@@ -2123,7 +2123,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	int temoin = 0;
 	int cpt_parenthese = 0;
 
-	//Correctness of the Newick format verification //Done in separate functions somewhere
+	//Correctness of the Newick format verification done in the main of the n2m_Lineage.cpp script
 	i=0;
 	n = 0;
 
@@ -2131,7 +2131,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	{
 		symbol = newick[cpt++];
 		if (symbol==':') i++;
-		if(symbol == ':' && symbolOld !=')') n++;
+		if(symbol == ':' && symbolOld !=')' && symbolOld !=',') n++;
 		if(symbol >= '0' && symbol <= '9' && symbolOld==')') temoin=1;
 		if(symbol==':' && temoin==1) temoin=0;
 		symbolOld = symbol;
@@ -2145,7 +2145,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	k=0;
 	a=0;
 	cpt=0;
-	VertexNumber = n - 1;
+	VertexNumber = n;
 	int pos_racine = -1;
 
 	string = (char*)malloc((100000) * sizeof(char));
@@ -2155,15 +2155,9 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 
 	do{		
 		symbol = newick[cpt++];
-
-		/*
-		All cells are marked with the identifier of their sequence only to avoid parsing for two long and for easier storing for the matrix later on.
-		The naive cell (root) is marked with 'N' to separate it from the rest.
-		*/
 		if ((symbol != ' ')&&(symbol != '\n')&&(symbol != '\t'))
 		{
 			string[a++] = symbol;
-
 		}
 	}while(symbol !='\0');
 
@@ -2171,7 +2165,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	while (string[0] == '(')   // traiter toute la chaine
 	{
 
-		//printf("\n ENTRÉE BOUCLE vérification DANS boucle while: %s", string);
+		printf("\n ENTRÉE BOUCLE vérification DANS boucle while: %s", string);
 		a1 = 0;
 		a2 = 0;
 		temoin = 0;
@@ -2191,10 +2185,10 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 		if(string[suiv] == ':')
 		{
 			temoin = 1;
-			VertexNumber++;
 			ancetre = VertexNumber;
 			itoa_(VertexNumber, int_node, 10);
 			lesNoms[VertexNumber] = int_node;
+			//VertexNumber++;
 		}
 		else
 		{
@@ -2227,8 +2221,6 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 
 		for ( ii = a1+1; ii <= a2; ii++)
 		{
-
-			//printf("\nENTRÉE BOUCLE vérification TRAITEMENT feuilles %d", ii);
 			if (string[ii] == ':')
 			{
 				xx = 0;
@@ -2242,7 +2234,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 				string1[xx++] = '\0';
 				idSeq = atof(string1);
 				if(string1[0] == NULL) {
-					ancetre = VertexNumber;
+					idSeq = VertexNumber;
 					itoa_(VertexNumber, int_node, 10);
 					lesNoms[VertexNumber] = int_node;
 					VertexNumber++;
@@ -2309,19 +2301,11 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 		string = string2;
 		string2 = tempString;
 		tempString = 0;
-		//printf("\n SORTIE BOUCLE VERIFICATION %s", string);
 
 		a = xx;  // mettre la longueur à jour 
 
 	} // fin du while pour traiter toute la string
 
-
-	/*for(i=1;i<=2*n-3;i++){
-		LONGUEUR[i-1] = LONGUEUR[i];
-		if(LONGUEUR[i-1] < 5*epsilon){
-			LONGUEUR[i-1] = 5*epsilon;
-		}
-	}*/
 
 	printf("\nListe des branches :");
 	for(i=0;i<=numero-1;i++){
@@ -2332,7 +2316,6 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	free(string);
 	free(string1);
 	free(string2);
-	//free(string3);
 
 	(*kt) = 2*n-3 - (*kt);
     

@@ -328,7 +328,7 @@ int vecteursEgaux(struct DescTree DTSpecies, struct DescTree DTGene){
 //===========================================================
 void Floyd(double ** Adjacence , double ** DIST,int n,int kt)
 {
-	int i,j,k;
+	int i, j, k;
 
 	for(i = 0; i <= n; i++)
 		for(j = 0; j <= n; j++)
@@ -345,7 +345,40 @@ void Floyd(double ** Adjacence , double ** DIST,int n,int kt)
 				for(k = 0; k <= n; k++)
 				{
 					if((DIST[j][i] + DIST[i][k]) < DIST[j][k])
+					{
 						DIST[j][k] = DIST[j][i] + DIST[i][k];
+					}
+						
+				}
+				
+}
+
+void FloydLineage(double ** Adjacence , double ** DIST,int n,int kt, int dist_naive)
+{
+	int i, j, k, root;
+
+	for(i = 0; i <= n; i++)
+		for(j = 0; j <= n; j++)
+		{
+			if(i == j)
+				DIST[i][j] = 0;
+			else
+				DIST[i][j] = Adjacence[i][j];
+		}
+
+
+		for(i = 0; i <= n; i++)
+			for(j = 0; j <= n; j++)
+				for(k = 0; k <= n; k++)
+				{
+					if((DIST[j][i] + DIST[i][k]) < DIST[j][k])
+					{
+						if(i == 0) { root = dist_naive; }
+						else { root = 0; }
+
+						DIST[j][k] = DIST[j][i] + DIST[i][k] - 2*root;
+					}
+						
 				}
 				
 }
@@ -2101,7 +2134,7 @@ int lectureNewick(const char * newick, long int * ARETE, double * LONGUEUR, char
 //===============================================================================================
 //
 //===============================================================================================
-int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEUR, char ** lesNoms, int *kt)
+int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEUR, char ** lesNoms, int *kt, std::map <std::string, int>& namesMap)
 {
 	/*	19-02-2024 Modifications by AnnArtiges and comments in English
 	This function is supposed to read a lineage tree in the Newick format and return the distances between all nodes in the tree.
@@ -2111,8 +2144,8 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	// TODO: Add your command handler code here
 	int n;                                     
 	int cpt_x;
-	int i, j, k, a, a1, a2, a3, VertexNumber, numero, idSeq, ancetre, suiv;
-	char symbol, *string, *string1, *string2, *string4, *anc, *int_node;
+	int i, j, k, a, a1, a2, a3, VertexNumber, numero, idSeq, ancetre, suiv, no_name = 1;
+	char symbol, *string, *string1, *string2, *string4, *anc, *int_node, *key_names;
 	char symbolOld =' ';
 	int zz, xx, jj, ii;
 	double longueur, dist_root = 0;		// Consider the naive cell as the root of the lineage tree
@@ -2165,7 +2198,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	while (string[0] == '(')   // traiter toute la chaine
 	{
 
-		printf("\n ENTRÉE BOUCLE vérification DANS boucle while: %s", string);
+		//printf("\n ENTRÉE BOUCLE vérification DANS boucle while: %s", string);
 		a1 = 0;
 		a2 = 0;
 		temoin = 0;
@@ -2178,6 +2211,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 		suiv = int(a2) + 1;
 		i = 0;
 		zz = a1 +1;
+		//printf("\n ok donc qui refuse de marcher ? %d // %d", suiv, VertexNumber);
 		
 		/*Retrieve the name of the ancestor-node.
 		 Specifically to get whether or not it is the naive cell, in which case we retrieve the distance associated and store it in the dist_root variable.*/
@@ -2185,10 +2219,19 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 		if(string[suiv] == ':')
 		{
 			temoin = 1;
+			printf("\n qqchose ici qui va pas ?");
 			ancetre = VertexNumber;
-			itoa_(VertexNumber, int_node, 10);
-			lesNoms[VertexNumber] = int_node;
-			//VertexNumber++;
+
+			std::string str = "node " + std::to_string(no_name);
+			char* int_node = new char[str.length() + 1];
+    		strcpy(int_node, str.c_str());
+			
+			lesNoms[ancetre] = int_node;
+			key_names = int_node;
+			namesMap[key_names] = VertexNumber;
+
+			VertexNumber++;
+			no_name++;
 		}
 		else
 		{
@@ -2261,11 +2304,10 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 				ARETEB[numero][1] = ancetre;
 				LONGUEUR[numero] = longueur + dist_root;
 
-				printf("\nAffiche les aretes %ld --- %ld = %f", ARETEB[numero][0], ARETEB[numero][1], LONGUEUR[numero]);
+				printf("\nAffiche les aretes %ld --- %ld = %f // %d", ARETEB[numero][0], ARETEB[numero][1], LONGUEUR[numero], numero);
 				numero++;
 
 			}
-
 		}
 
 		// fin for pour traiter noeud
@@ -2286,7 +2328,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 		*/
 		if(temoin == 1)
 		{
-			itoa_(VertexNumber,string1,10);   // 
+			itoa_(ancetre,string1,10);   // 
 			for( jj = 0; jj < (int) strlen(string1); jj++)
 			{ string2[xx++] = string1[jj]; }
 		}
@@ -2302,13 +2344,13 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 		string2 = tempString;
 		tempString = 0;
 
-		a = xx;  // mettre la longueur à jour 
+		a = xx;  // mettre la longueur à jour
 
 	} // fin du while pour traiter toute la string
 
 
 	printf("\nListe des branches :");
-	for(i=0;i<=numero-1;i++){
+	for(i = 0; i <= numero-1; i++){
 		printf("\n%ld-%ld --> %lf",ARETEB[i][0],ARETEB[i][1],LONGUEUR[i]);
 	}
     printf("\nFin de la liste\n");
@@ -2316,10 +2358,11 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	free(string);
 	free(string1);
 	free(string2);
+	free(tempString);
 
 	(*kt) = 2*n-3 - (*kt);
     
-	return pos_racine;
+	return dist_root;
 
 }
 

@@ -16,10 +16,15 @@
 #include <time.h>
 #include <ctype.h>
 #include <typeinfo>
+#include <string>
+#include <map>
+#include <iostream>
 
 #include "hgt_3.4_interactive/structures.h"
 #include "hgt_3.4_interactive/utils_tree.cpp"
 #include "hgt_3.4_interactive/fonctions.cpp"
+
+using namespace std;
 
 #define FAIL -1
 #define TRUE 1
@@ -86,17 +91,20 @@ int nbNodesNewick(const char * newick, int& nodes){
 
 	return n;
 }
+//, map<string, int> namesMap
+//, std::map <std::string, int> namesMap
+map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size){
 
-int getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size){
-
-	int i = 0, j, x = 0, y = 0, idStart = 0, idStop = 0, num = 0, root = 1;
-	char symbol, *numero;
+	int i = 0, j, x = 0, y = 0, idStart = 0, idStop = 0, num = 0, endId;
+	int root = 1, temoin_ab = 0, stop = 0;
+	char symbol, *numero, * key_names, *abond;
 	char ** namesTemp;
+	std::map <std::string, int> namesMap;
 	namesTemp = (char**)malloc(20*sizeof(char*));
 	numero = (char*)malloc((100) * sizeof(char));
 
 	for(i = 0; i <= size; i++)
-		namesTemp[i] = (char*)malloc(50);
+		{namesTemp[i] = (char*)malloc(50);}
 
 	i = 0;
 
@@ -107,6 +115,22 @@ int getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size)
 		if((symbol == '(') || (symbol == ',') || (symbol == ')'))
 		{
 			idStart = i;
+		}
+
+		if(symbol == '@')
+		{
+			temoin_ab = 1;
+			stop = i;
+			int a = i+1;
+			int b = 0;
+
+			while(newick[a] != ':')
+			{
+				abond[b++] = newick[a];
+				a++;
+			}
+			char abondance = atoi(abond);
+
 		}
 
 		if(symbol == ':')
@@ -129,26 +153,42 @@ int getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size)
 					newStr[x++] = '0';
 					for(j = 1; j <= 5; j++)
 					{
-						namesTemp[0][y++] = newick[idStart+j];
+						namesTemp[0][y] = newick[idStart+j];
+						y++;
 					}
+					key_names = namesTemp[0];
+					namesMap[key_names] = 0;
 					root = 0;
+					y=0;
+					//printf("\ncheck que key_names de Naive est pas vide %s ", key_names);
 				}
 				
 				else
 				{
-					num++;
+					if(temoin_ab == 1) {endId = stop;}
+					else {
+						endId = i;
+						char abondance = 1;
+					}
+					num += 1;
 
-					for(j = idStart+1; j < i; j++)
+					for(j = idStart+1; j < endId; j++)
 					{
-						namesTemp[num][y++] = newick[j];
+						namesTemp[num][y] = newick[j];
+						y++;
 					}
 
+
 					namesTemp[num][y++] = '\0';
+					key_names = namesTemp[num];
+					namesMap[key_names] = num;
 					itoa_(num, numero, 10);
 					for(y=0; y<strlen(numero); y++)
 					{
 						newStr[x++] = numero[y];
-					}			
+					}
+					temoin_ab = 0;
+					//printf("\ncheck que key_names des nodes est pas vide %s ", key_names);		
 				}
 				y = 0;
 
@@ -180,7 +220,17 @@ int getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size)
 		names++;
 	}
 
-	return names;
+	auto it = namesMap.begin();
+	while(it != namesMap.end())
+	{
+		if(it->second == 0)
+		{
+			it = namesMap.erase(it);
+		}
+		else {it++;}
+	}
+
+	return namesMap;
 }
 
 //========================================================================================================
@@ -215,12 +265,16 @@ int main(int nargc,char **argv){
 void newickToMatrixLineage(const char *newick,FILE *out){
 	int i,j;
 	int pos_racine = -1;
+	int dist_naive;
 	long int ** ARETEBcell;
 	double *  LONGUEUR;
 	char   ** NAMES;
 	char * newString;
 	double ** ADJACENCE;
 	double ** ADD;
+	//class map <string, int> dico;
+	//std::map <std::string,int> dico;
+	//map <string,int> :: iterator ic;
 	int kt;
 	int nbNodes = 0;
 	int size = nbNodesNewick(newick, nbNodes);
@@ -250,24 +304,28 @@ void newickToMatrixLineage(const char *newick,FILE *out){
 	for(i=0;i<=size;i++)
 		NAMES[i] = (char*)malloc(50);
 	//Method to retrieve the nodes' names and store them in a list
-	int test = getNamesNaive(newick, NAMES, newString, size);
+	std::map <std::string,int> dico = getNamesNaive(newick, NAMES, newString, size);
+	printf("\nLa récupération des noms est faite !");
 	
-	for(i=0; i<size; i++){ printf("\n %s\t %d", NAMES[i], i); }
 
 	
 	printf("\nici");	
-	pos_racine = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt);
+	dist_naive = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt, dico);
+	/*for(i = 0; i < fullSize; i++){
+		char *key = NAMES[i];
+		printf("\nDictionary %s\t %d", key, dico[key]);
+	}*/
 
 	printf("\n allo");
     loadAdjacenceMatrixLineage(ADJACENCE,ARETEBcell,LONGUEUR,fullSize,kt);
 	printf("le \n");
 
-    Floyd(ADJACENCE,ADD,fullSize,kt); 
+    FloydLineage(ADJACENCE,ADD,fullSize,kt, dist_naive); 
     printf("\n monde \n");
 
 
 	int max_taille=0;
-	for(j=1;j<=size;j++){
+	for(j = 1; j <= size;j++){
 		max_taille = (strlen(NAMES[j])>max_taille)?strlen(NAMES[j]):max_taille;
 	}
 

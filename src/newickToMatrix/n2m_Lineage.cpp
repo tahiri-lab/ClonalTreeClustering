@@ -71,37 +71,52 @@ void checkFormat(const char *newickLineageLine){
 }
 
 int nbNodesNewick(const char * newick, int& nodes){
-	int i=0;
+	int i = 0;
 	int n = 0;
-	char symbol,parent=' ';
-	char symbolOld =' ';  	
+	char symbol,parent = ' ';
+	char symbolOld = ' ';  	
 	int temoin =0;
 
 	do{
 		symbol = newick[i];
 		i++;
 		if (symbol == ':'){
-			if(symbolOld != ')' && symbolOld != ',') n++;
-			else nodes++;
+			//printf("\n symbol vaut : %d", newick[i-2]);
+			if(symbolOld != ')' && symbolOld != ',' && symbolOld != '(' && temoin != 2) { n++; }
+			else {
+				nodes++;
+				temoin = 0;
+			}
 		}
-		if(symbol >= '0' && symbol <= '9' && symbolOld==')') temoin=1;
-		if(symbol==':' && temoin==1) temoin=0;
+		if(symbol >= '0' && symbol <= '9' && symbolOld==')') {
+			temoin=1;
+			printf("\nrentre dans la boucle ou on assigne valeur 1 à témoin");
+			}
+		if(symbol==':' && temoin==1) {
+			temoin=0;
+			printf("\nrentre dans la boucle ou on assigne valeur 0 à témoin");
+			}
+
+		if(symbol == ')' || symbol == ',' || symbol == '(')
+		{
+			if(newick[i] == '@' || newick[i] == ':') { temoin = 2; }
+		}
 		symbolOld = symbol;
 	}while(symbol != ';');
 
 	return n;
 }
-//, map<string, int> namesMap
-//, std::map <std::string, int> namesMap
-map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size){
+
+map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size, std::map <std::string, int> &abondMap){
 
 	int i = 0, j, x = 0, y = 0, idStart = 0, idStop = 0, num = 0, endId;
-	int root = 1, temoin_ab = 0, stop = 0;
+	int root = 1, temoin_ab = 0, stop = 0, a, b, abondance;
 	char symbol, *numero, * key_names, *abond;
 	char ** namesTemp;
 	std::map <std::string, int> namesMap;
 	namesTemp = (char**)malloc(20*sizeof(char*));
 	numero = (char*)malloc((100) * sizeof(char));
+	abond = (char*)malloc((20) * sizeof(char));
 
 	for(i = 0; i <= size; i++)
 		{namesTemp[i] = (char*)malloc(50);}
@@ -121,15 +136,15 @@ map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * new
 		{
 			temoin_ab = 1;
 			stop = i;
-			int a = i+1;
-			int b = 0;
+			a = i+1;
+			b = 0;
 
 			while(newick[a] != ':')
 			{
 				abond[b++] = newick[a];
 				a++;
 			}
-			char abondance = atoi(abond);
+			abondance = atoi(abond);
 
 		}
 
@@ -144,8 +159,15 @@ map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * new
 
 
 			// Only retrieve the name of the node and assign a number if the node already has a name.
-			if(i != idStart+1)
+			if(i != idStart+1 && newick[idStart+1] != '@')
 			{
+				if(temoin_ab == 1) {
+					endId = stop;
+				}
+				else {
+					endId = i;
+					abondance = 1;
+				}
 				// If the node is "naive" (root), its name goes in the first position of the vector and the number assigned is 0.
 				// Also change root variable to 0 for later use. 
 				if(newick[idStart+1] == 'n')
@@ -158,6 +180,8 @@ map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * new
 					}
 					key_names = namesTemp[0];
 					namesMap[key_names] = 0;
+					abondMap[key_names] = abondance;
+					
 					root = 0;
 					y=0;
 					//printf("\ncheck que key_names de Naive est pas vide %s ", key_names);
@@ -165,11 +189,6 @@ map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * new
 				
 				else
 				{
-					if(temoin_ab == 1) {endId = stop;}
-					else {
-						endId = i;
-						char abondance = 1;
-					}
 					num += 1;
 
 					for(j = idStart+1; j < endId; j++)
@@ -182,6 +201,7 @@ map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * new
 					namesTemp[num][y++] = '\0';
 					key_names = namesTemp[num];
 					namesMap[key_names] = num;
+					abondMap[key_names] = abondance;
 					itoa_(num, numero, 10);
 					for(y=0; y<strlen(numero); y++)
 					{
@@ -191,10 +211,18 @@ map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * new
 					//printf("\ncheck que key_names des nodes est pas vide %s ", key_names);		
 				}
 				y = 0;
-
-				
+				idStop = i;
 			}
-			idStop = i;
+			else if (i != idStart+1 && newick[idStart+1] == '@') {
+				idStop = stop;} 
+			else if (i == idStart+1) {
+				newStr[x++] = '@';
+				newStr[x++] = '1';
+				idStop = i;
+				temoin_ab = 0;
+				}
+		temoin_ab = 0;
+			
 		}
 		i++;
 
@@ -272,7 +300,7 @@ void newickToMatrixLineage(const char *newick,FILE *out){
 	char * newString;
 	double ** ADJACENCE;
 	double ** ADD;
-	//class map <string, int> dico;
+	class map <string, int> dicAbond;
 	//std::map <std::string,int> dico;
 	//map <string,int> :: iterator ic;
 	int kt;
@@ -280,6 +308,7 @@ void newickToMatrixLineage(const char *newick,FILE *out){
 	int size = nbNodesNewick(newick, nbNodes);
 	int fullSize = size + nbNodes;
 	printf("\nNb nodes avec noms %d et nodes sans noms %d", size, nbNodes);
+	//printf("\nici");
 
 	newString = (char*)malloc(100000*sizeof(char));
 	
@@ -304,24 +333,25 @@ void newickToMatrixLineage(const char *newick,FILE *out){
 	for(i=0;i<=size;i++)
 		NAMES[i] = (char*)malloc(50);
 	//Method to retrieve the nodes' names and store them in a list
-	std::map <std::string,int> dico = getNamesNaive(newick, NAMES, newString, size);
+	std::map <std::string,int> dicNames = getNamesNaive(newick, NAMES, newString, size, dicAbond);
 	printf("\nLa récupération des noms est faite !");
+	printf("\n Nouvelle séquence Newick: %s", newString);
 	
 
 	
-	printf("\nici");	
-	dist_naive = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt, dico);
-	/*for(i = 0; i < fullSize; i++){
+	//printf("\nici");	
+	dist_naive = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt, size, dicNames, dicAbond);
+	for(i = 0; i < fullSize; i++){
 		char *key = NAMES[i];
-		printf("\nDictionary %s\t %d", key, dico[key]);
-	}*/
+		printf("\nAbundancy %s\t %d", key, dicAbond[key]);
+	}
 
-	printf("\n allo");
+	printf("\n allo ");
     loadAdjacenceMatrixLineage(ADJACENCE,ARETEBcell,LONGUEUR,fullSize,kt);
 	printf("le \n");
 
     FloydLineage(ADJACENCE,ADD,fullSize,kt, dist_naive); 
-    printf("\n monde \n");
+    printf("monde \n");
 
 
 	int max_taille=0;

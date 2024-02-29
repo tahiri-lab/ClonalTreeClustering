@@ -2220,18 +2220,24 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 		
 		/*Retrieve the name of the ancestor-node.
 		 Specifically to get whether or not it is the naive cell, in which case we retrieve the distance associated and store it in the dist_root variable.*/
-		if(string[suiv] == '@')
+		if(string[suiv] == '@' || string[suiv] == ':')
 		{
-			int ab = suiv + 1;
-			int ba = 0;
-
-			while(string[ab] != ':')
+			if(string[suiv] == '@')
 			{
-				abond[ba++] = string[ab];
-				ab++;
+				int ab = suiv + 1;
+				int ba = 0;
+				while(string[ab] != ':')
+				{
+					abond[ba++] = string[ab];
+					ab++;
+				}
+				next_node = ab;
+				abondance = atoi(abond);
 			}
-			next_node = ab;
-			abondance = atoi(abond);
+			else{
+				next_node = suiv;
+				abondance = 1;
+			}
 			temoin = 1;
 			ancetre = VertexNumber;
 
@@ -2250,23 +2256,6 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 
 		}
 
-		else if(string[suiv] == ':')
-		{
-			temoin = 1;
-			next_node = suiv;
-			ancetre = VertexNumber;
-
-			std::string str = "node" + std::to_string(no_name);
-			char* int_node = new char[str.length() + 1];
-    		strcpy(int_node, str.c_str());
-			
-			lesNoms[ancetre] = int_node;
-			namesMap[int_node] = VertexNumber;
-			abondMap[int_node] = 1;
-
-			VertexNumber++;
-			no_name++;
-		}
 		else
 		{
 			while(string[suiv] != ':')

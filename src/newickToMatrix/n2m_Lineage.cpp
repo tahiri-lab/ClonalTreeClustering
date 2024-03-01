@@ -31,7 +31,6 @@ using namespace std;
 #define FALSE 0
 #define INFINI 999999.99
 
-void newickToMatrixLineage(const char *newick,FILE *out);
 
 // Function to check the Newick Format and detect any errors before parsing the sequence for the distance matrix
 void checkFormat(const char *newickLineageLine){
@@ -107,13 +106,12 @@ int nbNodesNewick(const char * newick, int& nodes){
 	return n;
 }
 
-map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size, std::map <std::string, int> &abondMap){
+void getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size, std::map <std::string, int> &abondMap, std::map <std::string, int> &namesMap){
 
 	int i = 0, j, x = 0, y = 0, idStart = 0, idStop = 0, num = 0, endId;
 	int root = 1, temoin_ab = 0, stop = 0, a, b, abondance;
 	char symbol, *numero, * key_names, *abond;
 	char ** namesTemp;
-	std::map <std::string, int> namesMap;
 	namesTemp = (char**)malloc(20*sizeof(char*));
 	numero = (char*)malloc((100) * sizeof(char));
 	abond = (char*)malloc((20) * sizeof(char));
@@ -151,13 +149,10 @@ map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * new
 		if(symbol == ':')
 		{
 			// Write in the new string everything between the ":" and the last character before the name of the node.
-
 			for(j = idStop; j <= idStart; j++)
 			{
 				newStr[x++] = newick[j];
 			}
-
-
 			// Only retrieve the name of the node and assign a number if the node already has a name.
 			if(i != idStart+1 && newick[idStart+1] != '@')
 			{
@@ -173,11 +168,12 @@ map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * new
 				if(newick[idStart+1] == 'n')
 				{
 					newStr[x++] = '0';
-					for(j = 1; j <= 5; j++)
+					/*for(j = 1; j <= 5; j++)
 					{
 						namesTemp[0][y] = newick[idStart+j];
 						y++;
-					}
+					}*/
+					namesTemp[0] = "naive";
 					key_names = namesTemp[0];
 					namesMap[key_names] = 0;
 					abondMap[key_names] = abondance;
@@ -196,7 +192,6 @@ map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * new
 						namesTemp[num][y] = newick[j];
 						y++;
 					}
-
 
 					namesTemp[num][y++] = '\0';
 					key_names = namesTemp[num];
@@ -251,63 +246,30 @@ map<string, int>  getNamesNaive(const char * newick, char ** lesNoms, char * new
 	auto it = namesMap.begin();
 	while(it != namesMap.end())
 	{
-		if(it->second == 0)
+		if(it->second == 0 && it->first != "naive")
 		{
 			it = namesMap.erase(it);
 		}
 		else {it++;}
 	}
 
-	return namesMap;
+	//return namesMap;
 }
 
-//========================================================================================================
-//============================================ MAIN ======================================================
-//========================================================================================================
-int main(int nargc,char **argv){
-	
-	if (nargc != 3){
-		printf("\nNombre de parametres incorrects !!");
-		exit(1);
-	}
-	
-	char * newick = (char*)malloc(100000*sizeof(char));
-	int size;
-	FILE * in = fopen(argv[1],"r");
-	FILE * out = fopen(argv[2],"w");
-	newick = readNewick(in);
-	checkFormat(newick);
-	printf("\nLe format est bon");
-	newickToMatrixLineage(newick,out);
-
-	fclose(in);
-	fclose(out);
-	
-	
-	
-	return 0;
-}
-//==================================================================
-//=
-//==================================================================
-void newickToMatrixLineage(const char *newick,FILE *out){
+void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, int>& dicNames, std::map <std::string, int>& dicAbond, double **&ADD){
 	int i,j;
 	int pos_racine = -1;
 	int dist_naive;
 	long int ** ARETEBcell;
 	double *  LONGUEUR;
-	char   ** NAMES;
+	char ** NAMES;
 	char * newString;
 	double ** ADJACENCE;
-	double ** ADD;
-	class map <string, int> dicAbond;
-	//std::map <std::string,int> dico;
-	//map <string,int> :: iterator ic;
 	int kt;
 	int nbNodes = 0;
 	int size = nbNodesNewick(newick, nbNodes);
 	int fullSize = size + nbNodes;
-	printf("\nNb nodes avec noms %d et nodes sans noms %d", size, nbNodes);
+	printf("\n\nNb nodes avec noms %d et nodes sans noms %d", size, nbNodes);
 	//printf("\nici");
 
 	newString = (char*)malloc(100000*sizeof(char));
@@ -322,18 +284,24 @@ void newickToMatrixLineage(const char *newick,FILE *out){
 	LONGUEUR = (double*)malloc((4*(size))*sizeof(double));
 
 
-	ARETEBcell = (long int**)malloc(fullSize*sizeof(long int));
-	for(i = 0; i <= fullSize; i++)
+	// Modification to the initialization of ARETEBcell
+	// Only way I found to initialize it without having any problems for the following trees
+	ARETEBcell = new long int*[fullSize];
+	for(i = 0; i < fullSize; i++)
 	{
-		ARETEBcell[i] = (long int*)malloc(2); 
+		ARETEBcell[i] = new long int[2];
+		ARETEBcell[i][0] = 0;
+		ARETEBcell[i][1] = 0;
 	}
+
+	//for(i=0; i < fullSize; i++){printf("\n okay let's see %ld   %d", ARETEBcell[i][0], i);}
 
 
 	NAMES=(char**)malloc(2*size*sizeof(char*));
 	for(i=0;i<=size;i++)
 		NAMES[i] = (char*)malloc(50);
 	//Method to retrieve the nodes' names and store them in a list
-	std::map <std::string,int> dicNames = getNamesNaive(newick, NAMES, newString, size, dicAbond);
+	getNamesNaive(newick, NAMES, newString, size, dicAbond, dicNames);
 	printf("\nLa récupération des noms est faite !");
 	printf("\n Nouvelle séquence Newick: %s", newString);
 	
@@ -341,16 +309,18 @@ void newickToMatrixLineage(const char *newick,FILE *out){
 	
 	//printf("\nici");	
 	dist_naive = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt, size, dicNames, dicAbond);
-	for(i = 0; i < fullSize; i++){
+	//for(i=0; i < fullSize; i++){printf("\n okay let's see %ld   %d", ARETEBcell[i][0], i);}
+	/*for(i = 0; i < fullSize; i++){
 		char *key = NAMES[i];
 		printf("\nAbundancy %s\t %d", key, dicAbond[key]);
-	}
+	}*/
+	//printf("\n How many %ld", sizeof(ARETEBcell));
 
 	printf("\n allo ");
-    loadAdjacenceMatrixLineage(ADJACENCE,ARETEBcell,LONGUEUR,fullSize,kt);
-	printf("le \n");
+    loadAdjacenceMatrixLineage(ADJACENCE, ARETEBcell, LONGUEUR, fullSize-1, kt);
+	printf("le ");
 
-    FloydLineage(ADJACENCE,ADD,fullSize,kt, dist_naive); 
+    FloydLineage(ADJACENCE, ADD, fullSize-1, kt, dist_naive); 
     printf("monde \n");
 
 
@@ -360,7 +330,7 @@ void newickToMatrixLineage(const char *newick,FILE *out){
 	}
 
 
-	fprintf(out,"\n%d",size);
+	fprintf(out,"\n\n\n%d",size);
 	for(i = 0; i < fullSize; i++){
 		fprintf(out,"\n%s",NAMES[i]);
 		if(strlen(NAMES[i])<max_taille){
@@ -372,8 +342,183 @@ void newickToMatrixLineage(const char *newick,FILE *out){
 			fprintf(out,"  %3.5lf",ADD[i][j]);
 		}
 	}
+	free(ADJACENCE);
+	delete[] ARETEBcell;
+	free(LONGUEUR);
+	free(newString);
 
 }
+
+int calculMetric(double ** ADDT1, double ** ADDT2, std::map <std::string, int> namesT1, std::map <std::string, int> namesT2,
+	std::map <std::string, int> abondT1, std::map <std::string, int> abondT2){
+
+	int j, i = 1, sizeT1 = namesT1.size(), sizeT2 = namesT2.size();
+	float Penality, comNod = 0, totNod;
+	float Weight = 0, wt1, wt2;
+	float Dist = 0, dt1, dt2;
+	float metric;
+	char ** TN;
+	TN = (char**)malloc(20*sizeof(char*));
+
+	/*=======================
+			PENALITY
+			Retrieve number of common nodes, total nodes and the names of all nodes.
+	=======================*/
+	// The total number of nodes (without repetitions) is the sum of nodes in each trees minus the number of common nodes.
+	totNod = sizeT1 + sizeT2;
+	//auto it;
+
+	if(namesT1.count("naive") == 1 && namesT2.count("naive") == 1) {
+		comNod++;
+		totNod--;
+		TN[0] = "naive";
+	}
+
+	auto it = namesT1.begin();
+	for(it; it != namesT1.end(); it++)
+	{
+		const std::string& key = it->first;
+		if(namesT2[key] != 0){
+			comNod++;
+			totNod--;
+		}
+		char* node = new char[key.length() + 1];
+    	strcpy(node, key.c_str());
+		TN[i] = node;
+		i++;
+	}
+
+	// maybe a better way to deal with that
+	it = namesT2.begin();
+	for(it; it != namesT2.end(); it++)
+	{
+		const std::string& key = it->first;
+		if(namesT1[key] == 0 && key != "naive"){
+			char* node = new char[key.length() + 1];
+    		strcpy(node, key.c_str());
+			TN[i] = node;
+			i++;
+		}
+	}
+	//printf("\n Nombre de nodes communs %f et de nodes au total %f", comNod, totNod);
+	Penality = (comNod/totNod);
+
+	/*=======================
+			ABUNDANCE
+			calculate the abundance difference in the trees
+	=======================*/
+	for(i = 0; i < totNod; i++)
+	{
+		wt1 = abondT1[TN[i]];
+		wt2 = abondT2[TN[i]];
+		//printf("\nChecking le node %s et les poids dans T1 %f et dans T2 %f", TN[i], wt1, wt2);
+		Weight += abs(wt1 - wt2);
+	}
+
+	/*=======================
+			DISTANCE
+			calculate the distances difference between the trees
+	=======================*/
+	for(i = 0; i < totNod-1; i++)
+	{
+		for(j = i+1; j < totNod; j++)
+		{
+			dt1 = ADDT1[namesT1[TN[i]]][namesT1[TN[j]]];
+			dt2 = ADDT2[namesT2[TN[i]]][namesT2[TN[j]]];
+			//printf("\n Valeurs récupérées sont T1 = %f et T2 = %f", dt1, dt2);
+			Dist += sqrt(pow((dt1 - dt2), 2));
+		}
+	}
+
+	metric = Penality * (Weight + Dist);
+
+	//printf("\n okay, donc on a Weight %f et Distance %f", Weight, Dist);
+	//printf("\n la métrique vaut : %f", metric);
+	return metric;
+
+}
+
+//========================================================================================================
+//============================================ MAIN ======================================================
+//========================================================================================================
+int main(int nargc,char **argv){
+	
+	if (nargc < 3){
+		printf("\nPas assez de paramètres !");
+		exit(1);
+	}
+	//printf("\n the hell ? %d", nargc);
+	
+	char * newick1 = (char*)malloc(100000*sizeof(char));
+	char * newick2 = (char*)malloc(100000*sizeof(char));
+	int i, j;
+	double ** forest;
+	double **ADD = nullptr;
+	double **ADD2 = nullptr;
+	class map <string, int> dicAbond;
+	class map <string, int> dicNames;
+	class map <string, int> dicAbond2;
+	class map <string, int> dicNames2;
+
+	//FILE * in1 = fopen(argv[1],"r");
+	//FILE * in2 = fopen(argv[2], "r");
+	//FILE * out2 = fopen("whatever something.txt","w");
+
+	forest = (double**)malloc(2*nargc*sizeof(double*));
+	for(i=0;i<2*nargc;i++){
+		forest[i] = (double*)malloc(2*nargc*sizeof(double));
+	}
+
+	FILE * out = fopen(argv[nargc-1],"w");
+
+	for(i = 1; i < nargc-2; i++)
+	{
+		FILE * in1 = fopen(argv[i], "r");
+		newick1 = readNewick(in1);
+		checkFormat(newick1);
+		newickToMatrixLineage(newick1, out, dicNames, dicAbond, ADD);
+
+		for(j = i+1; j <= nargc-2; j++)
+		{
+			FILE * in2 = fopen(argv[j], "r");
+			newick2 = readNewick(in2);
+			checkFormat(newick2);
+			newickToMatrixLineage(newick2, out, dicNames2, dicAbond2, ADD2);
+			int trying = calculMetric(ADD, ADD2, dicNames, dicNames2, dicAbond, dicAbond2);
+			forest[i][j] = trying;
+			forest[j][i] = trying;
+			fclose(in2);
+		}
+		fclose(in1);
+	}
+	
+	for(i = 1; i <= nargc-2; i++)
+	{
+		printf("\n %d", i);
+		for(j = 1; j <= nargc-2; j++)
+		{printf("\t %f", forest[i][j]);}
+	}
+	printf("\n");
+	/*newickToMatrixLineage(newick1, out, dicNames, dicAbond, ADD);
+	fclose(in1);
+	newickToMatrixLineage(newick2, out, dicNames2, dicAbond2, ADD2);
+	printf("\n Something wrong ?");
+
+	int trying = calculMetric(ADD, ADD2, dicNames, dicNames2, dicAbond, dicAbond2);*/
+
+	//fclose(in1);
+	//fclose(in2);
+	fclose(out);
+	//fclose(out2);
+	
+	
+	
+	return 0;
+}
+//==================================================================
+//=
+//==================================================================
+
 
 //===================================================================
 //= 

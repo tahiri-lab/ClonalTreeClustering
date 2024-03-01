@@ -513,6 +513,7 @@ void loadAdjacenceMatrixLineage( double **Adjacence, long int **ARETEB, double *
 	for(i = 0; i <= size; i++){
 		Adjacence[ARETEB[i][0]][ARETEB[i][1]] = LONGUEUR[i];
 		Adjacence[ARETEB[i][1]][ARETEB[i][0]] = LONGUEUR[i];
+		//printf("\n WHat is it here ? %f    %d", LONGUEUR[i], i);
 	}
 	
 }
@@ -2183,6 +2184,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	a=0;
 	cpt=0;
 	VertexNumber = size;
+	//printf("\n Nb de noeuds : %d", VertexNumber);
 	int pos_racine = -1;
 
 	string = (char*)malloc((100000) * sizeof(char));
@@ -2327,7 +2329,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 				ARETEB[numero][1] = ancetre;
 				LONGUEUR[numero] = longueur + dist_root;
 
-				//printf("\nAffiche les aretes %ld --- %ld = %f // %d", ARETEB[numero][0], ARETEB[numero][1], LONGUEUR[numero], numero);
+				printf("\nAffiche les aretes %ld --- %ld = %f // %d", ARETEB[numero][0], ARETEB[numero][1], LONGUEUR[numero], numero);
 				numero++;
 
 			}

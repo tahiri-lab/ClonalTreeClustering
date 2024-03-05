@@ -513,7 +513,6 @@ void loadAdjacenceMatrixLineage( double **Adjacence, long int **ARETEB, double *
 	for(i = 0; i <= size; i++){
 		Adjacence[ARETEB[i][0]][ARETEB[i][1]] = LONGUEUR[i];
 		Adjacence[ARETEB[i][1]][ARETEB[i][0]] = LONGUEUR[i];
-		//printf("\n WHat is it here ? %f    %d", LONGUEUR[i], i);
 	}
 	
 }
@@ -2192,7 +2191,6 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	string1 = (char*)malloc((100000) * sizeof(char));
 	anc = (char*)malloc((100) * sizeof(char));
 
-	//printf("\n ENTRÉE BOUCLE vérification DANS boucle while: %s", newick);
 
 	do{		
 		symbol = newick[cpt++];
@@ -2205,7 +2203,6 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	numero = 0;
 	while (string[0] == '(')   // traiter toute la chaine
 	{
-		//printf("\n ENTRÉE BOUCLE vérification DANS boucle while: %s", string);
 		a1 = 0;
 		a2 = 0;
 		temoin = 0;
@@ -2301,11 +2298,13 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 				}
 				string1[xx++] = '\0';
 				idSeq = atof(string1);
+
 				if(string1[0] == NULL) {
 					idSeq = VertexNumber;
 					itoa_(VertexNumber, int_node, 10);
 					lesNoms[VertexNumber] = int_node;
 					VertexNumber++;
+					
 				}
 
 			}
@@ -2329,7 +2328,7 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 				ARETEB[numero][1] = ancetre;
 				LONGUEUR[numero] = longueur + dist_root;
 
-				printf("\nAffiche les aretes %ld --- %ld = %f // %d", ARETEB[numero][0], ARETEB[numero][1], LONGUEUR[numero], numero);
+				//printf("\nAffiche les aretes %ld --- %ld = %f // %d", ARETEB[numero][0], ARETEB[numero][1], LONGUEUR[numero], numero);
 				numero++;
 
 			}
@@ -2374,11 +2373,11 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 	} // fin du while pour traiter toute la string
 
 
-	printf("\nListe des branches :");
+	/*printf("\nListe des branches :");
 	for(i = 0; i <= numero-1; i++){
 		printf("\n%ld-%ld --> %lf",ARETEB[i][0],ARETEB[i][1],LONGUEUR[i]);
 	}
-    printf("\nFin de la liste\n");
+    printf("\nFin de la liste\n");*/
 
 	free(string);
 	free(string1);

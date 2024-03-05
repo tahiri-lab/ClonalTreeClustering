@@ -89,11 +89,11 @@ int nbNodesNewick(const char * newick, int& nodes){
 		}
 		if(symbol >= '0' && symbol <= '9' && symbolOld==')') {
 			temoin=1;
-			printf("\nrentre dans la boucle ou on assigne valeur 1 à témoin");
+			//printf("\nrentre dans la boucle ou on assigne valeur 1 à témoin");
 			}
 		if(symbol==':' && temoin==1) {
 			temoin=0;
-			printf("\nrentre dans la boucle ou on assigne valeur 0 à témoin");
+			//printf("\nrentre dans la boucle ou on assigne valeur 0 à témoin");
 			}
 
 		if(symbol == ')' || symbol == ',' || symbol == '(')
@@ -180,7 +180,6 @@ void getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size
 					
 					root = 0;
 					y=0;
-					//printf("\ncheck que key_names de Naive est pas vide %s ", key_names);
 				}
 				
 				else
@@ -202,8 +201,7 @@ void getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size
 					{
 						newStr[x++] = numero[y];
 					}
-					temoin_ab = 0;
-					//printf("\ncheck que key_names des nodes est pas vide %s ", key_names);		
+					temoin_ab = 0;		
 				}
 				y = 0;
 				idStop = i;
@@ -270,7 +268,7 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 	int size = nbNodesNewick(newick, nbNodes);
 	int fullSize = size + nbNodes;
 	printf("\n\nNb nodes avec noms %d et nodes sans noms %d", size, nbNodes);
-	//printf("\nici");
+
 
 	newString = (char*)malloc(100000*sizeof(char));
 	
@@ -294,27 +292,23 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 		ARETEBcell[i][1] = 0;
 	}
 
-	//for(i=0; i < fullSize; i++){printf("\n okay let's see %ld   %d", ARETEBcell[i][0], i);}
-
-
 	NAMES=(char**)malloc(2*size*sizeof(char*));
 	for(i=0;i<=size;i++)
 		NAMES[i] = (char*)malloc(50);
 	//Method to retrieve the nodes' names and store them in a list
 	getNamesNaive(newick, NAMES, newString, size, dicAbond, dicNames);
-	printf("\nLa récupération des noms est faite !");
-	printf("\n Nouvelle séquence Newick: %s", newString);
+	//printf("\nLa récupération des noms est faite !");
+	//printf("\n Nouvelle séquence Newick: %s", newString);
 	
 
 	
 	//printf("\nici");	
 	dist_naive = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt, size, dicNames, dicAbond);
-	//for(i=0; i < fullSize; i++){printf("\n okay let's see %ld   %d", ARETEBcell[i][0], i);}
+	//for(i=0; i < fullSize; i++){printf("\n okay let's see %s   %d", NAMES[i], i);}
 	/*for(i = 0; i < fullSize; i++){
 		char *key = NAMES[i];
 		printf("\nAbundancy %s\t %d", key, dicAbond[key]);
 	}*/
-	//printf("\n How many %ld", sizeof(ARETEBcell));
 
 	printf("\n allo ");
     loadAdjacenceMatrixLineage(ADJACENCE, ARETEBcell, LONGUEUR, fullSize-1, kt);
@@ -342,6 +336,7 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 			fprintf(out,"  %3.5lf",ADD[i][j]);
 		}
 	}
+
 	free(ADJACENCE);
 	delete[] ARETEBcell;
 	free(LONGUEUR);
@@ -349,13 +344,13 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 
 }
 
-int calculMetric(double ** ADDT1, double ** ADDT2, std::map <std::string, int> namesT1, std::map <std::string, int> namesT2,
+float calculMetric(double ** ADDT1, double ** ADDT2, std::map <std::string, int> namesT1, std::map <std::string, int> namesT2,
 	std::map <std::string, int> abondT1, std::map <std::string, int> abondT2){
 
-	int j, i = 1, sizeT1 = namesT1.size(), sizeT2 = namesT2.size();
+	int j, i = 1, sizeT1 = namesT1.size(), sizeT2 = namesT2.size(), a = 0, b = 0;
 	float Penality, comNod = 0, totNod;
-	float Weight = 0, wt1, wt2;
-	float Dist = 0, dt1, dt2;
+	float Weight = 0.0, wt1, wt2;
+	float Dist = 0.0, dt1, dt2;
 	float metric;
 	char ** TN;
 	TN = (char**)malloc(20*sizeof(char*));
@@ -366,42 +361,53 @@ int calculMetric(double ** ADDT1, double ** ADDT2, std::map <std::string, int> n
 	=======================*/
 	// The total number of nodes (without repetitions) is the sum of nodes in each trees minus the number of common nodes.
 	totNod = sizeT1 + sizeT2;
-	//auto it;
 
+
+	auto it = namesT1.begin(), it2 = namesT2.begin();
 	if(namesT1.count("naive") == 1 && namesT2.count("naive") == 1) {
 		comNod++;
 		totNod--;
 		TN[0] = "naive";
+		it++;
+		it2++;
 	}
 
-	auto it = namesT1.begin();
 	for(it; it != namesT1.end(); it++)
 	{
 		const std::string& key = it->first;
-		if(namesT2[key] != 0){
-			comNod++;
-			totNod--;
-		}
+
 		char* node = new char[key.length() + 1];
     	strcpy(node, key.c_str());
 		TN[i] = node;
+
+		if(namesT2[key] != 0 && node != "naive"){
+			comNod++;
+			totNod--;
+
+		}
+		else {
+			namesT2[key] = sizeT2 + b;
+			b++;
+		}
 		i++;
 	}
 
-	// maybe a better way to deal with that
-	it = namesT2.begin();
-	for(it; it != namesT2.end(); it++)
+	for(it2; it2 != namesT2.end(); it2++)
 	{
-		const std::string& key = it->first;
-		if(namesT1[key] == 0 && key != "naive"){
-			char* node = new char[key.length() + 1];
-    		strcpy(node, key.c_str());
+		const std::string& key = it2->first;
+		char* node = new char[key.length() + 1];
+    	strcpy(node, key.c_str());
+
+		if((namesT1[key] == 0) && node[0]!='n'){
 			TN[i] = node;
+			namesT1[key] = sizeT1 + a;
+			a++;
 			i++;
 		}
 	}
-	//printf("\n Nombre de nodes communs %f et de nodes au total %f", comNod, totNod);
 	Penality = (comNod/totNod);
+	printf("\n Penalité vaut : %f", Penality);
+
 
 	/*=======================
 			ABUNDANCE
@@ -411,7 +417,7 @@ int calculMetric(double ** ADDT1, double ** ADDT2, std::map <std::string, int> n
 	{
 		wt1 = abondT1[TN[i]];
 		wt2 = abondT2[TN[i]];
-		//printf("\nChecking le node %s et les poids dans T1 %f et dans T2 %f", TN[i], wt1, wt2);
+		//printf("\nChecking le node %s à la pos %d et les poids dans T1 %f et dans T2 %f", TN[i], i, wt1, wt2);
 		Weight += abs(wt1 - wt2);
 	}
 
@@ -421,19 +427,36 @@ int calculMetric(double ** ADDT1, double ** ADDT2, std::map <std::string, int> n
 	=======================*/
 	for(i = 0; i < totNod-1; i++)
 	{
+		char* nodeI = TN[i];
+
 		for(j = i+1; j < totNod; j++)
 		{
-			dt1 = ADDT1[namesT1[TN[i]]][namesT1[TN[j]]];
-			dt2 = ADDT2[namesT2[TN[i]]][namesT2[TN[j]]];
-			//printf("\n Valeurs récupérées sont T1 = %f et T2 = %f", dt1, dt2);
-			Dist += sqrt(pow((dt1 - dt2), 2));
+			char* nodeJ = TN[j];
+			dt1 = 0;
+			dt2 = 0;
+
+			if(namesT1.count(nodeI) == 1 && namesT1.count(nodeJ) == 1)
+			{
+				dt1 = ADDT1[namesT1[nodeI]][namesT1[nodeJ]];
+			}
+			
+			if(namesT2.count(nodeI) == 1 && namesT2.count(nodeJ) == 1)
+			{
+				dt2 = ADDT2[namesT2[nodeI]][namesT2[nodeJ]];
+			}
+			Dist += pow((dt1 - dt2), 2);
 		}
+		
+		//printf("\n Distance %f au noeud num %d \n", Dist, i);
 	}
+	Dist = sqrt(Dist);
 
 	metric = Penality * (Weight + Dist);
 
-	//printf("\n okay, donc on a Weight %f et Distance %f", Weight, Dist);
-	//printf("\n la métrique vaut : %f", metric);
+	printf("\n okay, donc on a Weight %f et Distance %f", Weight, Dist);
+	printf("\n la métrique vaut : %f", metric);
+
+	free(TN);
 	return metric;
 
 }
@@ -455,14 +478,6 @@ int main(int nargc,char **argv){
 	double ** forest;
 	double **ADD = nullptr;
 	double **ADD2 = nullptr;
-	class map <string, int> dicAbond;
-	class map <string, int> dicNames;
-	class map <string, int> dicAbond2;
-	class map <string, int> dicNames2;
-
-	//FILE * in1 = fopen(argv[1],"r");
-	//FILE * in2 = fopen(argv[2], "r");
-	//FILE * out2 = fopen("whatever something.txt","w");
 
 	forest = (double**)malloc(2*nargc*sizeof(double*));
 	for(i=0;i<2*nargc;i++){
@@ -473,22 +488,35 @@ int main(int nargc,char **argv){
 
 	for(i = 1; i < nargc-2; i++)
 	{
+
+		class map <string, int> dicAbond;
+		class map <string, int> dicNames;
+
 		FILE * in1 = fopen(argv[i], "r");
 		newick1 = readNewick(in1);
 		checkFormat(newick1);
+		//printf("\nT1");
 		newickToMatrixLineage(newick1, out, dicNames, dicAbond, ADD);
 
 		for(j = i+1; j <= nargc-2; j++)
 		{
+
+			class map <string, int> dicAbond2;
+			class map <string, int> dicNames2;
+			
 			FILE * in2 = fopen(argv[j], "r");
 			newick2 = readNewick(in2);
 			checkFormat(newick2);
 			newickToMatrixLineage(newick2, out, dicNames2, dicAbond2, ADD2);
-			int trying = calculMetric(ADD, ADD2, dicNames, dicNames2, dicAbond, dicAbond2);
+			double trying = calculMetric(ADD, ADD2, dicNames, dicNames2, dicAbond, dicAbond2);
 			forest[i][j] = trying;
 			forest[j][i] = trying;
+			free(newick2);
+			free(ADD2);
 			fclose(in2);
 		}
+
+		free(newick1);
 		fclose(in1);
 	}
 	
@@ -499,12 +527,6 @@ int main(int nargc,char **argv){
 		{printf("\t %f", forest[i][j]);}
 	}
 	printf("\n");
-	/*newickToMatrixLineage(newick1, out, dicNames, dicAbond, ADD);
-	fclose(in1);
-	newickToMatrixLineage(newick2, out, dicNames2, dicAbond2, ADD2);
-	printf("\n Something wrong ?");
-
-	int trying = calculMetric(ADD, ADD2, dicNames, dicNames2, dicAbond, dicAbond2);*/
 
 	//fclose(in1);
 	//fclose(in2);

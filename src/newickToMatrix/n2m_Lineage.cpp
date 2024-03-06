@@ -112,12 +112,13 @@ void getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size
 	int root = 1, temoin_ab = 0, stop = 0, a, b, abondance;
 	char symbol, *numero, * key_names, *abond;
 	char ** namesTemp;
+
 	namesTemp = (char**)malloc(20*sizeof(char*));
 	numero = (char*)malloc((100) * sizeof(char));
 	abond = (char*)malloc((20) * sizeof(char));
 
-	for(i = 0; i <= size; i++)
-		{namesTemp[i] = (char*)malloc(50);}
+	for (i = 0; i <= size; i++)
+		{ namesTemp[i] = (char*)malloc(50); }
 
 	i = 0;
 
@@ -163,17 +164,25 @@ void getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size
 					endId = i;
 					abondance = 1;
 				}
+
+				/*for(j = idStart+1; j < endId; j++)
+				{
+					key_names[y] = newick[j];
+					y++;
+				}*/
+				//y = 0;
 				// If the node is "naive" (root), its name goes in the first position of the vector and the number assigned is 0.
 				// Also change root variable to 0 for later use. 
 				if(newick[idStart+1] == 'n')
 				{
 					newStr[x++] = '0';
-					/*for(j = 1; j <= 5; j++)
+					for(j = 1; j <= 5; j++)
 					{
 						namesTemp[0][y] = newick[idStart+j];
 						y++;
-					}*/
-					namesTemp[0] = "naive";
+					}
+					namesTemp[0][y++] = '\0';
+					//lesNoms[0] = "naive";
 					key_names = namesTemp[0];
 					namesMap[key_names] = 0;
 					abondMap[key_names] = abondance;
@@ -193,6 +202,7 @@ void getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size
 					}
 
 					namesTemp[num][y++] = '\0';
+					//lesNoms[num] = key_names;
 					key_names = namesTemp[num];
 					namesMap[key_names] = num;
 					abondMap[key_names] = abondance;
@@ -495,7 +505,6 @@ int main(int nargc,char **argv){
 		FILE * in1 = fopen(argv[i], "r");
 		newick1 = readNewick(in1);
 		checkFormat(newick1);
-		//printf("\nT1");
 		newickToMatrixLineage(newick1, out, dicNames, dicAbond, ADD);
 
 		for(j = i+1; j <= nargc-2; j++)

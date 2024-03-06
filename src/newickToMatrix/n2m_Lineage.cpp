@@ -106,14 +106,15 @@ int nbNodesNewick(const char * newick, int& nodes){
 	return n;
 }
 
-void getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size, std::map <std::string, int> &abondMap, std::map <std::string, int> &namesMap){
+void getNamesNaive(const char * newick, char ** &lesNoms, char * newStr, int size, std::map <std::string, int> &abondMap, std::map <std::string, int> &namesMap){
 
-	int i = 0, j, x = 0, y = 0, idStart = 0, idStop = 0, num = 0, endId;
+	int i = 0, j, x = 0, y = 0, idStart = 0, idStop = 0, num = 1, endId, pos;
 	int root = 1, temoin_ab = 0, stop = 0, a, b, abondance;
 	char symbol, *numero, * key_names, *abond;
 	char ** namesTemp;
 
 	namesTemp = (char**)malloc(20*sizeof(char*));
+	key_names = (char*)malloc(20*sizeof(char*));
 	numero = (char*)malloc((100) * sizeof(char));
 	abond = (char*)malloc((20) * sizeof(char));
 
@@ -135,16 +136,6 @@ void getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size
 		{
 			temoin_ab = 1;
 			stop = i;
-			a = i+1;
-			b = 0;
-
-			while(newick[a] != ':')
-			{
-				abond[b++] = newick[a];
-				a++;
-			}
-			abondance = atoi(abond);
-
 		}
 
 		if(symbol == ':')
@@ -157,65 +148,50 @@ void getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size
 			// Only retrieve the name of the node and assign a number if the node already has a name.
 			if(i != idStart+1 && newick[idStart+1] != '@')
 			{
-				if(temoin_ab == 1) {
-					endId = stop;
-				}
-				else {
-					endId = i;
-					abondance = 1;
-				}
+				a = 0;
+				if(temoin_ab == 1) { endId = stop; }
+				else { endId = i; }
 
-				/*for(j = idStart+1; j < endId; j++)
+				for(j = idStart+1; j < endId; j++)
 				{
 					key_names[y] = newick[j];
 					y++;
-				}*/
-				//y = 0;
+				}
+				key_names[y] = '\0';
+
+				for(j = stop+1; j < i; j++)
+				{ 	abond[a++] = newick[j];  }
+				abondance = atoi(abond);
+				
 				// If the node is "naive" (root), its name goes in the first position of the vector and the number assigned is 0.
 				// Also change root variable to 0 for later use. 
-				if(newick[idStart+1] == 'n')
+				if(strcmp( key_names, "naive" ) == 0)
 				{
-					newStr[x++] = '0';
-					for(j = 1; j <= 5; j++)
-					{
-						namesTemp[0][y] = newick[idStart+j];
-						y++;
-					}
-					namesTemp[0][y++] = '\0';
-					//lesNoms[0] = "naive";
-					key_names = namesTemp[0];
-					namesMap[key_names] = 0;
-					abondMap[key_names] = abondance;
-					
+					pos = 0;
 					root = 0;
-					y=0;
 				}
-				
-				else
+				else {
+					pos = num;
+					num++;
+				}
+
+				itoa_(pos, numero, 10);
+				for(y = 0; y < strlen(numero); y++)
 				{
-					num += 1;
-
-					for(j = idStart+1; j < endId; j++)
-					{
-						namesTemp[num][y] = newick[j];
-						y++;
-					}
-
-					namesTemp[num][y++] = '\0';
-					//lesNoms[num] = key_names;
-					key_names = namesTemp[num];
-					namesMap[key_names] = num;
-					abondMap[key_names] = abondance;
-					itoa_(num, numero, 10);
-					for(y=0; y<strlen(numero); y++)
-					{
-						newStr[x++] = numero[y];
-					}
-					temoin_ab = 0;		
+					newStr[x++] = numero[y];
 				}
+
+				y = 0;
+				for(j = 0; j <= strlen(key_names); j++)
+				{
+					lesNoms[pos][y++] = key_names[j];
+				}
+				namesMap[key_names] = pos;
+				abondMap[key_names] = abondance;
 				y = 0;
 				idStop = i;
 			}
+
 			else if (i != idStart+1 && newick[idStart+1] == '@') {
 				idStop = stop;} 
 			else if (i == idStart+1) {
@@ -238,18 +214,19 @@ void getNamesNaive(const char * newick, char ** lesNoms, char * newStr, int size
 		newStr[x++] = newick[j];
 	}
 
-	int names = 0;
+	//int names = 0;
 
 	// If the naive cell is present root = 0 (otherwise root = 1)
 	// This allows us to know at what line to start parsing the namesTemp tab.
-	for(i = root; i <= num; i++)
+	/*for(i = root; i < num; i++)
 	{
-		for(j = 0; j <= strlen(namesTemp[i]); j++)
+		for(j = 0; j < strlen(namesTemp[i]); j++)
 		{
 			lesNoms[names][j] = namesTemp[i][j];
 		}
+		printf("\n Checking %s", namesTemp[i]);
 		names++;
-	}
+	}*/
 
 	auto it = namesMap.begin();
 	while(it != namesMap.end())
@@ -304,21 +281,16 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 
 	NAMES=(char**)malloc(2*size*sizeof(char*));
 	for(i=0;i<=size;i++)
-		NAMES[i] = (char*)malloc(50);
+	{	NAMES[i] = (char*)malloc(50); }
 	//Method to retrieve the nodes' names and store them in a list
 	getNamesNaive(newick, NAMES, newString, size, dicAbond, dicNames);
-	//printf("\nLa récupération des noms est faite !");
-	//printf("\n Nouvelle séquence Newick: %s", newString);
+	printf("\n Nouvelle séquence Newick: %s", newString);
 	
 
 	
 	//printf("\nici");	
 	dist_naive = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt, size, dicNames, dicAbond);
 	//for(i=0; i < fullSize; i++){printf("\n okay let's see %s   %d", NAMES[i], i);}
-	/*for(i = 0; i < fullSize; i++){
-		char *key = NAMES[i];
-		printf("\nAbundancy %s\t %d", key, dicAbond[key]);
-	}*/
 
 	printf("\n allo ");
     loadAdjacenceMatrixLineage(ADJACENCE, ARETEBcell, LONGUEUR, fullSize-1, kt);

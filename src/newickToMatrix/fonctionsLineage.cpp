@@ -766,7 +766,7 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 
 	//Method to retrieve the nodes' names and store them in a list
 	getNamesNaive(newick, NAMES, newString, size, dicAbond, dicNames);
-	printf("\n Nouvelle séquence Newick: %s \n", newString);
+	//printf("\n Nouvelle séquence Newick: %s \n", newString);
 	
 	// Retrieve the distances between nodes then build the distance matrix
 	dist_naive = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt, size, dicNames, dicAbond);

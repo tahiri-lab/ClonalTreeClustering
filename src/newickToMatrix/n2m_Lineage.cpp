@@ -24,8 +24,6 @@
 #include <vector>
 
 #include "hgt_3.4_interactive/structures.h"
-//#include "hgt_3.4_interactive/utils_tree.cpp"
-//#include "hgt_3.4_interactive/fonctions.cpp"
 #include "fonctionsLineage.cpp"
 
 using namespace std;
@@ -94,7 +92,6 @@ int main(int nargc,char **argv){
 			weightForest.push_back(dicAbond);
 			namesForest.push_back(dicNames);
 			
-
 			free(newick);
 			fclose(in);
 		}
@@ -111,10 +108,13 @@ int main(int nargc,char **argv){
 		ifstream file(in);
 		i = 0;
 		char * treeId;
+		char * oldTreeId;
 		while(getline(file, line))
 		{
 			if(line.find("((") != string::npos)
 			{
+				if(treeId == oldTreeId) { treeId = "unnamed"; }
+				treeNames[i] = treeId;
 				char * newick = new char[line.length() + 1];
 				strcpy(newick, line.c_str());
 				class map <string, int> dicAbond;
@@ -125,12 +125,12 @@ int main(int nargc,char **argv){
 				weightForest.push_back(dicAbond);
 				namesForest.push_back(dicNames);
 				i++;
+				oldTreeId = treeId;
 			}
 			else
 			{
 				treeId = new char[line.length() + 1];
     			strcpy(treeId, line.c_str());
-				treeNames[i] = treeId;
 			}
 		}
 		file.close();
@@ -161,7 +161,6 @@ int main(int nargc,char **argv){
 	}
 	
 	fprintf(out, "\n\n Comparison Matrix");
-	//FILE * foret = fopen("Forest_metric_fake.txt", "w");
 	for(i = 0; i < nbTrees; i++)
 	{
 		fprintf(out, "\n%s", treeNames[i]);
@@ -171,7 +170,6 @@ int main(int nargc,char **argv){
 	printf("\n");
 
 	fclose(out);
-	//fclose(foret);
 	
 	return 0;
 }

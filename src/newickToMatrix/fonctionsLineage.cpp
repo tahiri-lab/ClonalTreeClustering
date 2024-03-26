@@ -303,13 +303,14 @@ void getNamesNaive(const char * newick, char ** &lesNoms, char * newStr, int siz
 // Calculating the comparison metric between two lineage trees
 // Returns the metric if the trees have at least 3 common nodes, returns -1 otherwise
 //=================================================================================================*/
-float calculMetric(double ** ADDT1, double ** ADDT2, std::map <std::string, int> namesT1, std::map <std::string, int> namesT2,
-	std::map <std::string, int> abondT1, std::map <std::string, int> abondT2){
+float calculMetric(double ** ADDT1, double ** ADDT2, double ** AdjT1, double ** AdjT2,
+	std::map <std::string, int> namesT1, std::map <std::string, int> namesT2, std::map <std::string, int> abondT1, std::map <std::string, int> abondT2){
 
 	int j, i = 1, sizeT1 = namesT1.size(), sizeT2 = namesT2.size(), a = 0, b = 0;
 	float Penality, comNod = 0, totNod;
 	float Weight = 0.0, wt1, wt2;
 	float Dist = 0.0, Dij_T1, Dij_T2;
+	float Connect = 0.0, con_T1, con_T2;
 	float metric;
 	char ** TN;
 	TN = (char**)malloc(20*sizeof(char*));
@@ -399,16 +400,22 @@ float calculMetric(double ** ADDT1, double ** ADDT2, std::map <std::string, int>
 
 				Dij_T1 = ADDT1[namesT1[nodeI]][namesT1[nodeJ]];
 				Dij_T2 = ADDT2[namesT2[nodeI]][namesT2[nodeJ]];
-
 				if(isinf(Dij_T1)) { Dij_T1 = 0; }
-				if(isinf(Dij_T2)) { Dij_T2 = 0;}
+				if(isinf(Dij_T2)) { Dij_T2 = 0; }
 
+
+				con_T1 = AdjT1[namesT1[nodeI]][namesT1[nodeJ]];
+				con_T2 = AdjT2[namesT2[nodeI]][namesT2[nodeJ]];
+				if(isinf(con_T1)) { con_T1 = 0; }
+				if(isinf(con_T2)) { con_T2 = 0; }
+
+				Connect += abs(con_T1 - con_T2);
 				Dist += pow((Dij_T1 - Dij_T2), 2);
 			}
 		}
 		Dist = sqrt(Dist);
 
-		metric = Penality * (Weight + Dist);
+		metric = Penality * (Weight + Dist + Connect);
 
 		//printf("\n We ahev Weight %f and Distance %f", Weight, Dist);
 		//printf("\t The metric is : %f", metric);
@@ -423,19 +430,23 @@ float calculMetric(double ** ADDT1, double ** ADDT2, std::map <std::string, int>
 /*/=================================================================================================
 // Initializing the distance matrix
 //=================================================================================================*/
-void loadAdjacenceMatrixLineage( double **Adjacence, long int **ARETEB, double *LONGUEUR,int size,int kt){
+void loadAdjacenceMatrixLineage( double **tempDist, double **Adjacence, long int **ARETEB, double *LONGUEUR, int size, int kt){
 	
 	int i,j;
 	
 	for(i = 0; i <= size; i++) /*/(n+1)*/
 	{	for(j = 0; j <= size; j++){
-			Adjacence[i][j] = Adjacence[j][i] = INFINI;
+			tempDist[i][j] = tempDist[j][i] = INFINI;
+			//Adjacence[i][j] = Adjacence[j][i] = 0;
+
 		}
 	}
 	
 	for(i = 0; i <= size; i++){
-		Adjacence[ARETEB[i][0]][ARETEB[i][1]] = LONGUEUR[i];
-		Adjacence[ARETEB[i][1]][ARETEB[i][0]] = LONGUEUR[i];
+		tempDist[ARETEB[i][0]][ARETEB[i][1]] = LONGUEUR[i];
+		tempDist[ARETEB[i][1]][ARETEB[i][0]] = LONGUEUR[i];
+		//Adjacence[ARETEB[i][0]][ARETEB[i][1]] = 1;
+		//Adjacence[ARETEB[i][0]][ARETEB[i][1]] = 1;
 	}
 	
 }
@@ -443,7 +454,7 @@ void loadAdjacenceMatrixLineage( double **Adjacence, long int **ARETEB, double *
 /*/=================================================================================================
 // Calculating the full distance matrix for one tree
 //=================================================================================================*/
-void FloydLineage(double ** Adjacence , double ** DIST,int n,int kt, int dist_naive)
+void FloydLineage(double ** tempDist , double ** DIST,int n,int kt, int dist_naive)
 {
 	int i, j, k, root;
 
@@ -453,7 +464,7 @@ void FloydLineage(double ** Adjacence , double ** DIST,int n,int kt, int dist_na
 			if(i == j)
 				DIST[i][j] = 0;
 			else
-				DIST[i][j] = Adjacence[i][j];
+				DIST[i][j] = tempDist[i][j];
 		}
 
 
@@ -729,14 +740,14 @@ int lectureNewickBcell(const char * newick, long int ** ARETEB, double * LONGUEU
 /*/=================================================================================================
 // Function using all the previous functions to build a distance matrix and write it in the output file
 //=================================================================================================*/
-void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, int>& dicNames, std::map <std::string, int>& dicAbond, double **&ADD, char* treeID){
+void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, int>& dicNames, std::map <std::string, int>& dicAbond, double **&ADD, double **&Adjacence, char* treeID){
 	int i,j;
 	int pos_racine = -1;
 	int dist_naive;
 	long int ** ARETEBcell;
 	double *  LONGUEUR;
 	char ** NAMES;
-	double ** ADJACENCE;
+	double ** tempDIST;
 	int kt;
 	int nbNodes = 0;
 	int size = nbNodesNewick(newick, nbNodes);
@@ -745,10 +756,12 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 	char * newString = (char*)malloc(100000*sizeof(char));
 	
 	ADD = (double**)malloc(2*fullSize*sizeof(double*));
-	ADJACENCE = (double**)malloc(2*fullSize*sizeof(double*));
+	Adjacence = (double**)malloc(2*fullSize*sizeof(double*));
+	tempDIST = (double**)malloc(2*fullSize*sizeof(double*));
 	for(i=0;i<=2*fullSize;i++){
 		ADD[i] = (double*)malloc(2*fullSize*sizeof(double));
-		ADJACENCE[i] = (double*)malloc(2*fullSize*sizeof(double));
+		Adjacence[i] = (double*)malloc(2*fullSize*sizeof(double));
+		tempDIST[i] = (double*)malloc(2*fullSize*sizeof(double));
 	}
 
 	LONGUEUR = (double*)malloc((4*(size))*sizeof(double));
@@ -770,8 +783,8 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 	
 	// Retrieve the distances between nodes then build the distance matrix
 	dist_naive = lectureNewickBcell(newString,ARETEBcell,LONGUEUR,NAMES,&kt, size, dicNames, dicAbond);
-    loadAdjacenceMatrixLineage(ADJACENCE, ARETEBcell, LONGUEUR, fullSize-1, kt);
-    FloydLineage(ADJACENCE, ADD, fullSize-1, kt, dist_naive); 
+    loadAdjacenceMatrixLineage(tempDIST, Adjacence, ARETEBcell, LONGUEUR, fullSize-1, kt);
+    FloydLineage(tempDIST, ADD, fullSize-1, kt, dist_naive); 
 
 
 
@@ -794,7 +807,7 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 		}
 	}
 
-	free(ADJACENCE);
+	free(tempDIST);
 	delete[] ARETEBcell;
 	free(LONGUEUR);
 	free(newString);

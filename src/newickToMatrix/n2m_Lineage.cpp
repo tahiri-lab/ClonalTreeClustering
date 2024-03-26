@@ -58,7 +58,8 @@ int main(int nargc,char **argv){
 	int i, j;
 	double ** forest;
 	string delimiter = ".";
-	double **ADD = nullptr;
+	//double **ADD = nullptr;
+	double ***Connect;
 	double *** lineageForest;
 	std::vector<std::map<std::string, int>> weightForest;
 	std::vector<std::map<std::string, int>> namesForest;
@@ -67,9 +68,15 @@ int main(int nargc,char **argv){
 	{
 
 		nbTrees = nargc - 3;
+		printf("\t nombre d'arbres %d", nbTrees);
 		lineageForest = (double***)malloc(2*nbTrees*sizeof(double**));
+		Connect = (double***)malloc(2*nbTrees*sizeof(double**));
 		treeNames = (char**)malloc(nbTrees*sizeof(char*));
-		for(i = 0; i < 2*nbTrees; i++) { lineageForest[i] = nullptr;}
+		for(i = 0; i < 2*nbTrees; i++)
+		{
+			lineageForest[i] = nullptr;
+			Connect[i] = nullptr;
+		}
 		
 		for(i = 2; i < nargc - 1; i++)
 		{
@@ -88,7 +95,7 @@ int main(int nargc,char **argv){
 			treeNames[i-2] = treeId;
 
 			checkFormat(newick);
-			newickToMatrixLineage(newick, out, dicNames, dicAbond, lineageForest[i-2], treeId);
+			newickToMatrixLineage(newick, out, dicNames, dicAbond, lineageForest[i-2], Connect[i-2], treeId);
 			weightForest.push_back(dicAbond);
 			namesForest.push_back(dicNames);
 			
@@ -101,8 +108,13 @@ int main(int nargc,char **argv){
 	{
 		nbTrees = atoi(argv[2]);
 		lineageForest = (double***)malloc(2*nbTrees*sizeof(double**));
+		Connect = (double***)malloc(2*nbTrees*sizeof(double**));
 		treeNames = (char**)malloc(2*nbTrees*sizeof(char*));
-		for(i = 0; i < 2*nbTrees; i++) { lineageForest[i] = nullptr;}
+		for(i = 0; i < 2*nbTrees; i++)
+		{
+			lineageForest[i] = nullptr;
+			Connect[i] = nullptr;
+		}
 		string line;
 		string in = argv[3];
 		ifstream file(in);
@@ -113,7 +125,7 @@ int main(int nargc,char **argv){
 		{
 			if(line.find("((") != string::npos)
 			{
-				if(treeId == oldTreeId) { treeId = "unnamed"; }
+				if(treeId == oldTreeId || treeId[0] == 0) { treeId = "unnamed"; }
 				treeNames[i] = treeId;
 				char * newick = new char[line.length() + 1];
 				strcpy(newick, line.c_str());
@@ -121,7 +133,7 @@ int main(int nargc,char **argv){
 				class map <string, int> dicNames;
 
 				checkFormat(newick);
-				newickToMatrixLineage(newick, out, dicNames, dicAbond, lineageForest[i], treeId);
+				newickToMatrixLineage(newick, out, dicNames, dicAbond, lineageForest[i], Connect[i], treeId);
 				weightForest.push_back(dicAbond);
 				namesForest.push_back(dicNames);
 				i++;
@@ -154,7 +166,7 @@ int main(int nargc,char **argv){
 			class map <string, int> dicAbond2 = weightForest[j];
 			class map <string, int> dicNames2 = namesForest[j];
 			
-			double trying = calculMetric(lineageForest[i], lineageForest[j], dicNames, dicNames2, dicAbond, dicAbond2);
+			double trying = calculMetric(lineageForest[i], lineageForest[j], Connect[i], Connect[j], dicNames, dicNames2, dicAbond, dicAbond2);
 			forest[i][j] = trying;
 			forest[j][i] = trying;
 		}

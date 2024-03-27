@@ -306,7 +306,7 @@ void getNamesNaive(const char * newick, char ** &lesNoms, char * newStr, int siz
 float calculMetric(double ** ADDT1, double ** ADDT2, double ** AdjT1, double ** AdjT2,
 	std::map <std::string, int> namesT1, std::map <std::string, int> namesT2, std::map <std::string, int> abondT1, std::map <std::string, int> abondT2){
 
-	int j, i = 1, sizeT1 = namesT1.size(), sizeT2 = namesT2.size(), a = 0, b = 0;
+	int j, i = 1, sizeT1 = namesT1.size(), sizeT2 = namesT2.size(), a = 1, b = 1;
 	float Penality, comNod = 0, totNod;
 	float Weight = 0.0, wt1, wt2;
 	float Dist = 0.0, Dij_T1, Dij_T2;
@@ -350,7 +350,7 @@ float calculMetric(double ** ADDT1, double ** ADDT2, double ** AdjT1, double ** 
 
 			}
 			else {
-				namesT2[key] = sizeT2 + b;
+				namesT2[key] = sizeT2 + 2*b;
 				b++;
 			}
 		}
@@ -406,18 +406,19 @@ float calculMetric(double ** ADDT1, double ** ADDT2, double ** AdjT1, double ** 
 
 				con_T1 = AdjT1[namesT1[nodeI]][namesT1[nodeJ]];
 				con_T2 = AdjT2[namesT2[nodeI]][namesT2[nodeJ]];
-				if(isinf(con_T1)) { con_T1 = 0; }
-				if(isinf(con_T2)) { con_T2 = 0; }
+				//if(isinf(con_T1)) { con_T1 = 0; }
+				//if(isinf(con_T2)) { con_T2 = 0; }
 
 				Connect += abs(con_T1 - con_T2);
 				Dist += pow((Dij_T1 - Dij_T2), 2);
+				//printf("\n On regarde les nodes %s et %s dans arbre 1 %f et arbre 2 %f", nodeI, nodeJ, con_T1, con_T2);
 			}
 		}
 		Dist = sqrt(Dist);
 
 		metric = Penality * (Weight + Dist + Connect);
 
-		//printf("\n We ahev Weight %f and Distance %f", Weight, Dist);
+		printf("\n We have Distance %f and Adjacence %f", Dist, Connect);
 		//printf("\t The metric is : %f", metric);
 
 		free(TN);
@@ -437,7 +438,7 @@ void loadAdjacenceMatrixLineage( double **tempDist, double **Adjacence, long int
 	for(i = 0; i <= size; i++) /*/(n+1)*/
 	{	for(j = 0; j <= size; j++){
 			tempDist[i][j] = tempDist[j][i] = INFINI;
-			//Adjacence[i][j] = Adjacence[j][i] = 0;
+			Adjacence[i][j] = Adjacence[j][i] = 0;
 
 		}
 	}
@@ -445,8 +446,8 @@ void loadAdjacenceMatrixLineage( double **tempDist, double **Adjacence, long int
 	for(i = 0; i <= size; i++){
 		tempDist[ARETEB[i][0]][ARETEB[i][1]] = LONGUEUR[i];
 		tempDist[ARETEB[i][1]][ARETEB[i][0]] = LONGUEUR[i];
-		//Adjacence[ARETEB[i][0]][ARETEB[i][1]] = 1;
-		//Adjacence[ARETEB[i][0]][ARETEB[i][1]] = 1;
+		Adjacence[ARETEB[i][0]][ARETEB[i][1]] = 1;
+		Adjacence[ARETEB[i][1]][ARETEB[i][0]] = 1;
 	}
 	
 }
@@ -794,9 +795,10 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 	}
 
 	// Write the name of the tree, number of nodes and distance matrix in the output file
-	fprintf(out,"\n\n\n%s \t number of nodes :%d",treeID,size);
+	fprintf(out,"%s \t number of nodes :%d",treeID,size);
 	for(i = 0; i < fullSize; i++){
 		fprintf(out,"\n%s",NAMES[i]);
+		//printf("\n %s", NAMES[i]);
 		if(strlen(NAMES[i])<max_taille){
 			for(j = strlen(NAMES[i]); j <= max_taille; j++){
 				fprintf(out," ");
@@ -804,8 +806,10 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 		}
 		for(j = 0; j < fullSize; j++){
 			fprintf(out,"  %3.5lf",ADD[i][j]);
+			//printf("\t %f", Adjacence[i][j]);
 		}
 	}
+	fprintf(out, "\n\n\n");
 
 	free(tempDIST);
 	delete[] ARETEBcell;

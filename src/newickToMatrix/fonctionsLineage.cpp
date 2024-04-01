@@ -418,7 +418,7 @@ float calculMetric(double ** ADDT1, double ** ADDT2, double ** AdjT1, double ** 
 
 		metric = Penality * (Weight + Dist + Connect);
 
-		printf("\n We have Distance %f and Adjacence %f", Dist, Connect);
+		//printf("\n We have Distance %f and Adjacence %f", Dist, Connect);
 		//printf("\t The metric is : %f", metric);
 
 		free(TN);
@@ -810,6 +810,7 @@ void newickToMatrixLineage(const char *newick,FILE *out, std::map <std::string, 
 		}
 	}
 	fprintf(out, "\n\n\n");
+	//printf("\n\n");
 
 	free(tempDIST);
 	delete[] ARETEBcell;

@@ -1,12 +1,12 @@
 # real-dataset
-This is the link to the real data used in our project: 
+-This is the link to the real data used in our project: 
 https://datadryad.org/stash/dataset/doi:10.5061/dryad.35ks2
 
-The dataset contains 7 files in fasta format containing nucleotide sequences.
+-The dataset contains 7 files in fasta format containing nucleotide sequences.
 
-##150 sequences are selected randomly from these files (50 sequences from each Donor).
+-150 sequences are selected randomly from these files (50 sequences from each Donor).
 
-###The number of repetitions of the sequences is calculated through the provided Python code.
+-The number of repetitions of the sequences is calculated through the provided Python code.
 
-####New newicks containing the weights and the branch lengths of these sequences are generated through the provided Python codes.
+-New newicks containing the weights and the branch lengths of these sequences are generated through the provided Python codes.
 

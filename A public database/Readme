@@ -8,5 +8,5 @@ The dataset contains 7 files in fasta format containing nucleotide sequences.
 
 ###The number of repetitions of the sequences is calculated through the provided Python code.
 
-####New newicks containing the weights and the branch lengths of these sequences are obtained through the provided Python codes.
+####New newicks containing the weights and the branch lengths of these sequences are generated through the provided Python codes.
 

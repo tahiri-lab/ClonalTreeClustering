@@ -1,0 +1,10 @@
+T_1:((seq16@1:1,seq17@1:2,seq8@1:1,seq7@1:1,seq18@1:1,seq15@2:1,(seq11@1:1,seq10@1:1,seq12@1:1,(seq13@1:1)seq14@3:1)seq9@6:1,(seq2@1:1,seq4@1:1,seq3@2:1,(seq6@4:1)seq5@4:1)seq1@4:2)naive@15:1); 
+T_2:(((seq14@1:1,seq15@1:1)seq16@5:1,(seq1@1:3,seq13@1:1,seq11@1:1,seq8@2:1,(seq2@1:1)seq3@1:1,(seq9@1:1)seq10@1:2,(seq4@1:1,(seq5@1:1)seq6@1:1):1,seq12@3:1)seq7@10:1)naive@19:1);
+T_3:((seq18@1:1,seq25@1:1,seq22@1:1,seq26@1:1,seq27@1:2,seq24@1:1,seq23@1:2,seq19@2:1,(seq20@1:1)seq21@1:1,(seq16@1:1)seq17@1:1,(seq3@1:2,seq2@2:1,seq6@2:1,(seq4@1:1)seq5@1:1)seq1@3:1,(seq15@1:1,seq7@1:1,seq9@1:1,seq11@1:1,seq10@1:1,(seq14@1:1,seq12@1:1)seq13@1:1)seq8@8:1)naive@12:1);
+T_4:((seq6@1:1,seq1@1:1,seq5@1:1,seq4@1:1,(seq2@1:1)seq3@1:1,((seq9@1:1)seq8@1:1)seq7@6:2,(seq12@1:1,seq10@1:1,seq13@1:1,seq14@1:1,(seq16@1:1)seq15@9:1)seq11@9:1)naive@14:1);​
+T_5:((seq1@1:1,(seq2@1:2,seq5@1:1,seq6@1:1,seq3@3:2)seq4@2:2,(seq13@1:1,seq15@1:1,seq16@1:1,seq9@1:4,seq14@2:1,(seq12@1:1)seq11@2:3,(seq7@1:1)seq8@3:1)seq10@6:1,(seq17@1:3,seq25@1:1,(seq24@1:1)seq23@1:1,seq28@3:1,(seq26@1:1)seq27@3:1,(seq20@1:1,seq21@1:1,seq19@2:1)seq22@1:1)seq18@5:1)naive@2:1);​
+T_6:(((seq3@2:2,seq2@3:1,(seq7@1:1,seq5@1:1,seq6@1:1)seq4@8:1)seq1@3:1,((seq10@1:1,seq9@1:1)seq8@5:2,(seq18@1:1,seq15@1:1,seq14@1:1,seq19@1:1,seq16@1:1,seq17@4:1,seq13@4:2)seq12@9:1)seq11@2:1)naive@1:1);​
+T_7:((seq14@1:1,seq17@1:2,seq16@1:1,seq3@1:1,seq18@1:1,seq13@1:2,seq4@1:1,seq15@5:1,(seq1@1:1)seq2@4:1,(seq8@1:1,seq10@1:1,seq9@2:1,seq5@2:1,seq12@3:1,(seq7@1:1)seq6@2:1)seq11@2:1)naive@20:1);​
+T_8:(((seq4@1:1,seq3@1:1,seq2@1:2,(seq6@1:1,seq7@2:1):1,seq5@3:1,seq8@4:1)seq1@9:1,(seq10@1:1,seq18@1:1,seq16@1:1,seq17@1:2,seq12@1:1,seq13@1:1,seq11@1:1,seq19@2:1,seq20@2:1,(seq15@1:1)seq14@2:2,seq21@4:1)seq9@10:1)naive@1:1);​
+T_9:((seq1@1:3,seq3@1:2,seq2@1:1,seq9@1:1,seq6@1:1,(seq8@1:1)seq7@1:1,(seq4@1:1)seq5@1:1,(seq13@1:1,seq10@1:1,seq11@1:2)seq12@1:1,(seq16@1:2,seq15@1:2,(seq17@1:1)seq18@7:1,seq19@9:1)seq14@4:1)naive@15:1);​
+T_10:((seq11@1:2,seq6@1:2,seq3@1:1,seq5@1:1,seq2@1:1,seq12@1:1,seq13@1:1,seq7@1:1,seq8@1:1,seq4@1:1,seq10@1:1,seq9@1:1,seq1@2:3,(seq15@1:1,seq14@1:2,seq17@3:1)seq16@9:1)naive@23:1);​

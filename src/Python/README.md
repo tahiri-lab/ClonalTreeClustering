@@ -4,7 +4,7 @@ This code comprised of the following main steps:
 
    - parse_newick: Extracts node weights from Newick strings
    - normalize_weights: Normalizes weights to a 0-1 scale
-   - Calculate differences between normalized weights for each pair of trees.
+   - Calculate weight differences: Computes pairwise differences between normalized weights for each pair of trees.
    - calculate_distances: Computes pairwise distances between sequences in a tree
    - normalize_matrix: Normalizes a matrix to a 0-1 scale
    - calculate_W: Calculates the W component of the GBLD metric, then averaging based on the maximum number of nodes

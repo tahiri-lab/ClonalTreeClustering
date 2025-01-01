@@ -153,3 +153,86 @@ Cluster 1: Tree_3
 ## License
 
 This project is licensed under the MIT License.
+
+
+
+# 🧑‍💻 **WMFD Calculation and Clustering** 🌳
+
+This repository provides Python scripts for calculating **Weighted Minimum Feature Difference (WMFD)** between tree pairs, followed by clustering using **DBSCAN**. 🧠🌲
+
+## 🔍 **Features**
+
+- **WMFD Calculation**: 
+  - Computes distances between trees based on features like Branch Length, Weight, Degree, Height, and Hamming Distance. 📏
+  
+- **Distance Matrix**: 
+  - Creates a symmetric matrix of tree pair distances. 🔢
+
+- **DBSCAN Clustering**: 
+  - Applies DBSCAN clustering to group trees based on distance. 🔍
+
+## ⚙️ **Requirements**
+
+Install necessary libraries:
+
+```bash
+pip install pandas numpy scikit-learn
+```
+
+## 📝 **Input Format**
+
+- **CSV** with columns: 
+  - `Tree_Pair`: Tree pair names (e.g., `("Tree_1", "Tree_2")`)
+  - `Normalized_*`: Metrics for each tree pair.
+  - `Penalty`: A penalty factor.
+
+Example CSV:
+| Tree_Pair           | Normalized_Common_BL | Penalty | ... |
+|---------------------|----------------------|---------|-----|
+| ("Tree_1", "Tree_2")| 0.75                 | 1.5     | ... |
+
+## 🚀 **How to Run**
+
+1. Clone the repo:
+
+```bash
+git clone https://github.com/yourusername/WMFD-Clustering.git
+cd WMFD-Clustering
+```
+
+2. Run the script:
+
+```bash
+python wmfd_clustering.py
+```
+
+3. Enter **lambda values** and **DBSCAN parameters** when prompted. 🖱️
+
+4. Check the output file for the **distance matrix** and **clustering results**. 📊
+
+## 📤 **Output**
+
+- **Distance Matrix**: A symmetric matrix of WMFD values.
+- **Clustering Results**: Clusters with tree members grouped by DBSCAN.
+
+## 📈 **Example Results**
+
+```plaintext
+Parameters:
+λ₁ (Branch Length) = 1.0
+epsilon (ε) = 0.1
+
+Distance Matrix:
+Tree    Tree_1  Tree_2  Tree_3
+Tree_1    0.0     0.5     0.3
+Tree_2    0.5     0.0     0.7
+
+Clustering Results:
+Cluster 0: Tree_1, Tree_2
+Cluster 1: Tree_3
+```
+
+## 📜 **License**
+
+This project is licensed under the MIT License. 🚀
+

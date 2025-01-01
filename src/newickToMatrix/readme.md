@@ -104,14 +104,3 @@ tree_2    13.228757   0.000000    14.966630  -1.0
 tree_3    7.681146    14.966630   0.000000   -1.0
 tree_4    -1.0        -1.0        -1.0        0.000000
 ```
-
----
-
-For any questions or issues, please contact the author at **anna.artiges@example.com**.
-```
-
-### Key Improvements:
-- Added **professional tone** and structure.
-- Included **emojis** (stickers) to make sections visually engaging.
-- Emphasized important notes such as formatting requirements for node names.
-

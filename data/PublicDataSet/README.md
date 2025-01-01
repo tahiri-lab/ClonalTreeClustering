@@ -23,7 +23,7 @@ The dataset consists of **B-cell receptor sequences** from memory and naive B-ce
 
 1. **Data Sampling**: 150 nucleotides are randomly selected from the available BCR sequences.
 2. **Newick Conversion**: The sampled data is converted into a **weighted Newick format**.
-3. **GBLD Calculation**: The Genetic Branch Length Distance (GBLD) score is calculated using the converted Newick sequences.
+3. **GBLD Calculation**: The Generalized Branch Length Distance (GBLD) score is calculated using the converted Newick sequences.
 
 ## Output 🖥️
 

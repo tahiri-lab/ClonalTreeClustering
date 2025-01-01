@@ -41,73 +41,6 @@ tree_4  -1.0       -1.0       -1.0      0.000000
 ```
 
 
-
-```markdown
-# n2m_Lineage README
-**Author**: Anna ARTIGES
-
-### 📜 Description:
-The `n2m_Lineage` program computes the distance matrix between lineage trees using the **GLBD metric**. It processes Newick sequences, calculating pairwise distances to compare lineage trees effectively.
-
-### ⚙️ Requirements:
-- 🐧 **Linux** operating system
-- 🖥️ **C++ compiler** (any compatible C++ compiler)
-
-## 🔨 How to Create the Executable File:
-
-To compile the `n2m_Lineage.cpp` file on Linux/UNIX, run the following command in the terminal:
-```bash
-c++ n2m_Lineage.cpp -o n2m
-```
-
-## 🏃‍♂️ How to Run the `n2m` Program:
-
-The program can process files containing multiple Newick sequences, where each sequence represents a lineage tree. If a sequence does not have a name, the program will automatically assign one.
-
-You can run the program with a single file containing multiple Newick sequences, or with multiple files, each containing a single Newick sequence.
-
-### ⚠️ Important Notes:
-- **Nodes cannot contain the word "node"** in their names, or they will not be compared between trees. Ensure that your Newick sequences are correctly formatted before running the program.
-
-### 📝 Command Syntax:
-
-#### Single File with X Sequences:
-```bash
-./n2m -s X FILE output_file.txt
-```
-
-#### Multiple Files:
-```bash
-./n2m -m FILE_1 FILE_2 output_file.txt
-```
-
-## 📂 Output File:
-
-The `output_file.txt` will contain:
-1. The distance matrix for each lineage tree.
-2. The matrix of distances between trees.
-
-### Example Format for Distance Matrix:
-Before each distance matrix, the name of the tree and the number of nodes will be listed, for example:
-```
-tree_1   number of nodes: 12
-```
-
-At the end of the file, you'll find the comparison matrix between all trees. A value of `-1.0` indicates that the trees have fewer than 3 nodes in common and were not compared.
-
-### Example Comparison Matrix:
-```
-Comparison Matrix
-tree_1    0.000000    13.228757   7.681146   -1.0
-tree_2    13.228757   0.000000    14.966630  -1.0
-tree_3    7.681146    14.966630   0.000000   -1.0
-tree_4    -1.0        -1.0        -1.0        0.000000
-```
-
-
-
-Here's the professional and polished `README.md` based on your code:
-
 ```markdown
 # NewickToMatrix Conversion v0.1
 
@@ -117,9 +50,9 @@ Here's the professional and polished `README.md` based on your code:
 ### 📜 Description:
 The `NewickToMatrix` program converts lineage trees represented in Newick format into distance matrices. The program computes tree distances based on the **GLBD metric**. This utility is ideal for comparing lineage trees and analyzing the relationships between them in a structured manner.
 
-### 🖥️ Requirements:
-- **Linux** or UNIX-based system
-- **C++ Compiler** (any standard C++ compiler)
+### 🧰 Requirements:
+- 🐧**Linux** or UNIX-based system
+- 🖥️**C++ Compiler** (any standard C++ compiler)
 
 ### 🔨 How to Compile the Program:
 
@@ -192,8 +125,3 @@ The program first reads Newick sequences, processes the lineage trees, and then 
 - **UQAM Lab** for developing and maintaining the code.
 ```
 
-### Key Features of the README:
-- **Structured layout**: Clear and well-organized sections for easy readability.
-- **Commands and examples**: Provides detailed instructions on how to use the program.
-- **Explanation of output format**: Example matrices show users what to expect.
-- **Important notes**: Alerts the user to common issues (e.g., node naming restrictions).

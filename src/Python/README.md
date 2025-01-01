@@ -1,4 +1,4 @@
-# 🌿 GBLD Program: Generalized Branch Length Distance Metric
+# 🦠 GBLD Program: Generalized Branch Length Distance Metric
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)  
 [![Bioinformatics](https://img.shields.io/badge/Field-Bioinformatics-green)](#)  

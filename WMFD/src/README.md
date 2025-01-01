@@ -1,5 +1,4 @@
-# 🧑‍💻 **WMFD Calculation and Clustering** 🌳
-
+# 🧑‍💻 **WMFD Calculation and Clustering** 
 This repository provides Python scripts for calculating the **Weighted Multi-Feature Distance (WMFD)** between tree pairs based on multiple metrics, followed by clustering the results using **DBSCAN**. The goal is to analyze similarities between phylogenetic trees based on different tree features, calculate distances between them, and apply clustering algorithms to group similar tree pairs.🧠🌲
 
 ## 🔍 **Features**
@@ -117,8 +116,3 @@ Cluster 1: Tree_3
 ```
 
 
-
-
-## 📜 **License**
-
-This project is licensed under the MIT License. 🚀

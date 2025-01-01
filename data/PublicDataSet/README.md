@@ -1,16 +1,5 @@
 # A Public Database of Memory and Naive B-Cell Receptor Sequences
 
-One public database of more than 37 million unique BCR sequences from three healthy adult donors.
-https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0160853
-
--150 nucleotides of this data set are sampled randomly and converted to the weighted Newick format to use in GBLD metric.
-
-The output file contains GBLD scores along with the process until reaching these scores.
-
-
-
-# A Public Database of Memory and Naive B-Cell Receptor Sequences
-
 This project leverages a public database containing over **37 million unique B-cell receptor (BCR) sequences** from three healthy adult donors. The data can be accessed via the following publication:
 
 [PLoS ONE: A Public Database of Memory and Naive B-Cell Receptor Sequences](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0160853)

@@ -157,6 +157,3 @@ Contributions, issues, and feature requests are welcome! Feel free to submit a p
 ## 💡 Acknowledgements  
 This tool was developed to support bioinformatics research in lineage tree analysis and comparison. Special thanks to the Biopython community for providing powerful libraries for sequence analysis.
 
---- 
-
-Let me know if you'd like further modifications or additional details included!

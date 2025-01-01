@@ -1,17 +1,17 @@
-# simulated-data
+# 🌳 **simulated-data**
 
-## B-cell lineage trees infered by GCtree
+## 🧬 **B-cell Lineage Trees Inferred by GCtree**
 
-This folder contains several files with a total of 92 simulated BCR lines obtained with the GCtree [[WS DeWitt III et al., 2018]](https://academic.oup.com/mbe/article/35/5/1253/4893244) simulator available here: https://github.com/matsengrp/gctree
+This folder contains 92 simulated BCR lineage trees generated using the **GCtree** simulator by [WS DeWitt III et al., 2018](https://academic.oup.com/mbe/article/35/5/1253/4893244). You can access the GCtree simulator [here](https://github.com/matsengrp/gctree).
 
-Each folder contains several fasta files corresponding to the BCR lineage tree, containing at most the same number of sequences as the folder name.
+Each folder represents a lineage tree and contains several **FASTA** files with sequences. The number of sequences corresponds to the folder name. For each lineage file **tree.fasta**, you will find:
+- **tree.GT.naive.nk**: The real tree.
+- **tree.GT.nk**: The tree deduced by GCtree.
 
-For each given lineage file "tree.fasta", there is:
-- the real tree "tree.GT.naive.nk"
-- the tree deduced by GCtree "tree.GT.nk"
+---
 
-## Simple cases (case 1, case 2 and case 3)
+## 🧑‍🔬 **Simple Cases (Case 1, Case 2, Case 3)**
 
-For each given case, created manually, there is:
-- the alignment file "casX-N.fasta", where X is the number of the case and N the number of sequences
-- the tree "casX.nk"
+For each of the manually created cases, the following files are provided:
+- **casX-N.fasta**: The alignment file (X is the case number and N is the number of sequences).
+- **casX.nk**: The corresponding tree.

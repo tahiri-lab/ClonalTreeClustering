@@ -122,3 +122,20 @@ Cluster 1: Tree_3
 
 This project is licensed under the MIT License. 🚀
 
+📈 Example Results
+plaintext
+Copy code
+Parameters:
+λ₁ (Branch Length) = 1.0
+epsilon (ε) = 0.1
+
+Distance Matrix:
+Tree    Tree_1  Tree_2  Tree_3
+Tree_1    0.0     0.5     0.3
+Tree_2    0.5     0.0     0.7
+
+Clustering Results:
+Cluster 0: Tree_1, Tree_2
+Cluster 1: Tree_3
+📜 License
+This project is licensed under the MIT License. 🚀

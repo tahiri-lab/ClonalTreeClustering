@@ -41,7 +41,6 @@ tree_4  -1.0       -1.0       -1.0      0.000000
 ```
 
 
-Here’s the revised, professional version of your `README.md` with stickers:
 
 ```markdown
 # n2m_Lineage README

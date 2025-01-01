@@ -34,7 +34,7 @@ For each lineage file in **Folder 50**, you will find:
 
 ## Output 📝
 
-For each lineage tree, the **GBLD (Genetic Branch Length Distance)** scores are calculated and saved in an output file. This includes the **GBLD scores** for the **10 lineage trees** in Folder 50, as well as the **intermediate steps** leading to the final score.
+For each lineage tree, the **GBLD (Generalized Branch Length Distance)** scores are calculated and saved in an output file. This includes the **GBLD scores** for the **10 lineage trees** in Folder 50, as well as the **intermediate steps** leading to the final score.
 
 ## Citation 📚
 

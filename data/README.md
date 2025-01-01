@@ -1,3 +1,8 @@
-This folder contains:
-- the real-dataset folder containing 2 experimental datasets
-- the simulated-data folder containing 92 simulated trees obtained with GCtree simulator
+## 📂 **Folder Structure**
+
+This repository contains the following directories:
+
+- **real-dataset**: Contains two experimental datasets for tree analysis.
+- **simulated-data**: Includes 92 simulated trees generated using the GCtree simulator.
+
+These datasets provide both real-world and simulated data for research and analysis in tree clustering and comparison.

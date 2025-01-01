@@ -113,6 +113,3 @@ ClonalTreeClustering/
 ## 🤝 Acknowledgments  
 This project is developed as part of ongoing research in B-cell lineage tree clustering. Contributions from collaborators in the bioinformatics community are greatly appreciated.  
 
----
-
-Feel free to customize further with tools like [Shields.io](https://shields.io/) for badges (e.g., build status, license) and additional markdown features for tables or icons. This enhanced README makes it more professional and user-friendly!

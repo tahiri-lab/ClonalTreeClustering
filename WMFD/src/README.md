@@ -10,7 +10,7 @@ This repository provides Python scripts for calculating the **Weighted Multi-Fea
     - **Weight**
     - **Degree**
     - **Height**
-    - **Hamming Distance**
+    - **Topology**
   - The final WMFD is calculated based on these metrics and a penalty factor applied to the uncommon part.
   
 - 🔢**Distance Matrix**:

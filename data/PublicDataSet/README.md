@@ -17,7 +17,7 @@ This project leverages a public database containing over **37 million unique B-c
 
 ## Dataset Description 📊
 
-The dataset consists of **B-cell receptor sequences** from memory and naive B-cells. For the purposes of this project, **150 nucleotides** from this dataset are randomly sampled and converted into a **weighted Newick format**. This format is used for further analysis, particularly for calculating the **GBLD (Genetic Branch Length Distance)** metric.
+The dataset consists of **B-cell receptor sequences** from memory and naive B-cells. For the purposes of this project, **150 nucleotides** from this dataset are randomly sampled and converted into a **weighted Newick format**. This format is used for further analysis, particularly for calculating the **GBLD (Generalized Branch Length Distance)** metric.
 
 ## Process Overview 🔄
 

@@ -30,7 +30,7 @@ The dataset consists of **B-cell receptor sequences** from memory and naive B-ce
 The output file generated from this process contains:
 
 - **GBLD Scores**: The final calculated GBLD score for each pair of BCR sequences.
-- **Intermediate Process**: The steps leading to the final GBLD score, including the normalization of branch lengths, differences, penalties, and other intermediary calculations.
+- **Intermediate Process**: The steps leading to the final GBLD score, including the normalization of branch lengths, weight differences, penalties, and other intermediary calculations.
 
 ## Usage 🔧
 

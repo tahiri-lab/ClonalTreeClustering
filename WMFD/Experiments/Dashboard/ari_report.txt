@@ -1,0 +1,8 @@
+ARI: 0.417504
+Purity (majority): 0.733333
+Pred clusters: [1, 2, 3]
+True clusters: [1, 2, 3]
+Majority mapping (pred -> true):
+  1 -> 2
+  2 -> 1
+  3 -> 3

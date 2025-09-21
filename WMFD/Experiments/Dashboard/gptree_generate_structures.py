@@ -194,7 +194,7 @@ def generate_runs(
 # ... tout ton code des classes et fonctions ...
 
 if __name__ == "__main__":
-    # 1) Génère en mémoire, pas de fichiers
+    
     runs = generate_runs(
         Ks=[1,2,3,4],
         Ls=[10, 20, 30, 40, 50, 60],
@@ -206,7 +206,7 @@ if __name__ == "__main__":
     )
     print("Total runs:", len(runs))
 
-    # 2) Petit contrôle
+    
     for r in runs:
         print(r.run_name, ":", len(r.trees_ete), "arbres")
         for t in r.trees_ete[:4]:

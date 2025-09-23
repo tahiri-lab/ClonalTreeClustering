@@ -1,27 +1,34 @@
-# gptree_generate_structures.py
-# Génère des runs "en mémoire" (AUCUN fichier).
-# Retourne des dataclasses avec les arbres au format ETE3 et/ou structure imbriquée Python.
-#
-# Dépendances : pip install ete3
+#!/usr/bin/env python3
+# -- coding: utf-8 --
+"""
+gptree_generate_structures.py
+-----------------------------
+Génère en mémoire des "runs" d'arbres phylo-like (ETE3) selon des grilles de paramètres.
+- Chaque run : K prototypes ; pour chaque prototype, n_per_group arbres perturbés.
+- Perturbations = NNI + jitter longueurs ; Bruit = NNI additionnels + renommage de feuilles.
+- Retourne des dataclasses (RunSpec) avec : trees_ete, trees_nested (optionnel), true_labels.
+
+Dépendances : pip install ete3
+"""
 
 from __future__ import annotations
 import random
 from dataclasses import dataclass
-from typing import List, Literal, Optional, Dict, Any
+from typing import List, Literal, Optional, Dict, Any, Tuple
 from ete3 import Tree
 
-# ----------------------------- Structures de données -----------------------------
+# ======================= Structures de données =======================
 
-@dataclass
+@dataclass(frozen=True)
 class Node:
-    """Structure d'arbre immuable 100% Python (pas d'ETE3 requis côté consommateur)."""
+    """Arbre immuable 100% Python (pas d'ETE3 requis côté consommateur)."""
     name: Optional[str]
     dist: float
     children: List["Node"]
 
 @dataclass
 class RunSpec:
-    """Un 'run' avec méta + arbres (formats au choix, voir generate_runs)."""
+    """Un 'run' avec méta + arbres (formats au choix)."""
     run_name: str
     K: int
     L: int
@@ -29,14 +36,18 @@ class RunSpec:
     plevel: float
     noise_pct: float
     rep: int
-    trees_ete: Optional[List[Tree]]           # présent si format demandé inclut 'ete'
-    trees_nested: Optional[List[Node]]        # présent si format demandé inclut 'nested'
-    # On peut ajouter d'autres vues (ex: newick str) si besoin sans écrire de fichiers.
+    trees_ete: Optional[List[Tree]]           # présent si return_format inclut 'ete'
+    trees_nested: Optional[List[Node]]        # présent si return_format inclut 'nested'
+    true_labels: Optional[List[int]] = None   # étiquette vraie de cluster pour chaque arbre
 
-# ----------------------------- Génération des arbres -----------------------------
+ReturnFormat = Literal["ete", "nested", "both"]
+
+# ======================= Génération des arbres =======================
 
 def _make_base_tree(num_leaves: int, seed: Optional[int]=None) -> Tree:
-    """Arbre binaire simple avec feuilles L1..Ln, longueurs > 0."""
+    """
+    Arbre binaire simple avec feuilles L1..Ln, longueurs > 0.
+    """
     if seed is not None:
         random.seed(seed)
 
@@ -59,7 +70,9 @@ def _make_base_tree(num_leaves: int, seed: Optional[int]=None) -> Tree:
     return t
 
 def _random_nni_moves(t: Tree, n_moves: int):
-    """Petits NNI pour varier la topologie (sans longueurs nulles)."""
+    """
+    Petits NNI pour varier la topologie (sans supprimer de feuilles).
+    """
     for _ in range(max(0, n_moves)):
         internals = [n for n in t.traverse()
                      if not n.is_leaf() and n.up is not None and len(n.children) >= 2]
@@ -81,36 +94,73 @@ def _random_nni_moves(t: Tree, n_moves: int):
         pa.add_child(b); pb.add_child(a)
 
 def _rescale_branch_lengths(t: Tree, factor: float = 1.0, jitter: float = 0.1):
-    """Garantit dist >= 0.01 pour éviter les longueurs nulles."""
+    """
+    Rescale + jitter contrôlé ; garantit dist >= 0.01.
+    """
     for n in t.traverse():
         d = (n.dist if n.dist is not None else 0.1)
         d = d * factor * (1.0 + jitter*(random.random()-0.5))
         n.dist = max(0.01, d)
 
-def _make_tree_from_proto(proto: Tree, plevel: float, seed: Optional[int]=None) -> Tree:
-    """Copie + perturbations contrôlées (NNI + rescale). Aucune suppression de feuilles."""
+def _apply_noise_to_leafnames(t: Tree, noise_pct: float, seed: Optional[int]=None):
+    """
+    Bruit sur l'ensemble de taxons : remplace ~p% des feuilles par des noms uniques.
+    Réduit l'intersection des noms entre arbres -> utile pour faire baisser ARI.
+    """
+    if noise_pct <= 0:
+        return
+    if seed is not None:
+        random.seed(seed + 1_234_567)
+    leaves = t.get_leaves()
+    k = max(0, int(round(len(leaves) * (noise_pct/100.0))))
+    idxs = random.sample(range(len(leaves)), k) if k>0 else []
+    for i in idxs:
+        leaves[i].name = f"NOISE_{i}_{random.randint(0, 10**9)}"
+
+def _calc_internal_edges(t: Tree) -> int:
+    return max(1, sum(1 for n in t.traverse() if not n.is_leaf() and n.up is not None))
+
+def _make_tree_from_proto(proto: Tree, plevel: float, noise_pct: float=0.0, seed: Optional[int]=None) -> Tree:
+    """
+    Copie + perturbations contrôlées :
+      - NNI (intensité ~ (1-plevel) + bruit)
+      - Rescale longueurs (jitter ~ (1-plevel) + bruit)
+      - Bruit sur noms de feuilles (proportion=p)
+    Aucun changement du nombre de feuilles.
+    """
     if seed is not None:
         random.seed(seed)
     t = proto.copy(method="deepcopy")
-    internal_edges = max(1, sum(1 for n in t.traverse() if not n.is_leaf() and n.up is not None))
-    n_moves = int(round((1.0 - plevel) * internal_edges))
-    _random_nni_moves(t, n_moves)
-    _rescale_branch_lengths(t, factor=1.0, jitter=0.2*(1.0 - 0.5*plevel))
+
+    internal_edges = _calc_internal_edges(t)
+    base_moves  = int(round((1.0 - plevel) * internal_edges))
+    extra_moves = int(round((noise_pct/100.0) * internal_edges))
+    total_moves = base_moves + extra_moves
+    _random_nni_moves(t, total_moves)
+
+    jitter = 0.2*(1.0 - 0.5*plevel) + 0.3*(noise_pct/100.0)
+    _rescale_branch_lengths(t, factor=1.0, jitter=jitter)
+
+    _apply_noise_to_leafnames(t, noise_pct=noise_pct, seed=seed)
     return t
 
-# ----------------------------- Conversions ---------------------------------------
+# ======================= Conversions =======================
 
 def _ete_to_nested(n: Tree) -> Node:
-    """Convertit un nœud ETE3 (TreeNode) en structure Node (récursif)."""
+    """
+    Convertit un nœud ETE3 (TreeNode) en structure Node (récursif).
+    """
     children = [ _ete_to_nested(c) for c in n.children ]
     name = n.name if (n.name not in (None, "", "NoName")) else None
     dist = float(n.dist) if n.dist is not None else 0.01
     return Node(name=name, dist=dist, children=children)
 
-# ----------------------------- Validations (in-memory) ---------------------------
+# ======================= Validations =======================
 
 def validate_tree_ete(t: Tree) -> Dict[str, Any]:
-    """Retourne un petit rapport de validation pour un arbre ETE3."""
+    """
+    Retourne un petit rapport de validation pour un arbre ETE3.
+    """
     leaves = t.get_leaves()
     zero = sum(1 for n in t.traverse() if (n.dist is None or n.dist == 0))
     neg  = sum(1 for n in t.traverse() if (n.dist is not None and n.dist < 0))
@@ -124,31 +174,29 @@ def validate_tree_ete(t: Tree) -> Dict[str, Any]:
     }
 
 def validate_run(run: RunSpec) -> Dict[str, Any]:
-    """Validation d’un run (agrégé)."""
+    """
+    Validation d’un run (agrégé).
+    """
     reports = []
     if run.trees_ete:
         for t in run.trees_ete:
             reports.append(validate_tree_ete(t))
     ok = all(r["ok"] for r in reports) if reports else True
-    return {"run_name": run.run_name, "trees": len(reports), "ok": ok, "details": reports[:5]}  # aperçus
+    return {"run_name": run.run_name, "trees": len(reports), "ok": ok, "details": reports[:5]}
 
-# ----------------------------- Générateur principal ------------------------------
-
-ReturnFormat = Literal["ete", "nested", "both"]
+# ======================= Générateur principal =======================
 
 def generate_runs(
     Ks: List[int] = [1, 2, 3, 4],
     Ls: List[int] = [10, 20, 30, 40, 50, 60],
     ns: List[int] = [8, 16],
     plevels: List[float] = [0.30, 0.50, 0.70],
-    noises: List[int] = [0, 25, 50, 75],        # gardé pour compat signature; pas utilisé pour "drop"
+    noises: List[int] = [0, 25, 50, 75],
     reps: List[int] = [0, 1, 2],
     return_format: ReturnFormat = "both",
 ) -> List[RunSpec]:
     """
-    Génère tous les runs en mémoire et renvoie une liste de RunSpec.
-    Aucun fichier n'est écrit.
-    - return_format: 'ete' (objets ETE3), 'nested' (Node), ou 'both'.
+    Génère une liste de RunSpec. Aucun fichier n’est écrit ; tout est en mémoire.
     """
     all_runs: List[RunSpec] = []
 
@@ -159,23 +207,29 @@ def generate_runs(
                     for noise in noises:
                         for rep in reps:
                             run_name = f"run_k{K}L{L}_n{n_per_group}_plev{int(plevel*100)}_p{int(noise)}rep{rep}"
-                            trees_ete: Optional[List[Tree]] = [] if return_format in ("ete", "both") else None
-                            trees_nested: Optional[List[Node]] = [] if return_format in ("nested", "both") else None
+                            trees_ete: Optional[List[Tree]] = [] if return_format in ("ete","both") else None
+                            trees_nested: Optional[List[Node]] = [] if return_format in ("nested","both") else None
+                            labels_true: List[int] = []
 
                             # K prototypes; chaque proto => n_per_group arbres perturbés
                             for g in range(K):
+                                # NB: seed rend réplicable par (rep, g, L)
                                 proto = _make_base_tree(L, seed=(rep*10000 + g*1000 + L))
                                 for i in range(n_per_group):
-                                    t = _make_tree_from_proto(proto, plevel=plevel, seed=(rep*10000 + g*1000 + i))
+                                    t = _make_tree_from_proto(
+                                        proto,
+                                        plevel=plevel,
+                                        noise_pct=float(noise),
+                                        seed=(rep*10000 + g*1000 + i)
+                                    )
                                     if trees_ete is not None:
                                         trees_ete.append(t)
                                     if trees_nested is not None:
-                                        # convertir à partir de la racine implicite de ETE3
-                                        # Attention: ETE3 a une racine implicite; on descend si un seul enfant non-feuille
                                         root = t
                                         if len(root.children) == 1:
                                             root = root.children[0]
                                         trees_nested.append(_ete_to_nested(root))
+                                    labels_true.append(f"{g}_{i}")   # g = cluster, i = index arbre dans ce cluster
 
                             all_runs.append(RunSpec(
                                 run_name=run_name,
@@ -183,32 +237,37 @@ def generate_runs(
                                 plevel=plevel, noise_pct=float(noise),
                                 rep=rep,
                                 trees_ete=trees_ete,
-                                trees_nested=trees_nested
+                                trees_nested=trees_nested,
+                                true_labels=labels_true,
                             ))
     return all_runs
 
-# ----------------------------- Exemple d’utilisation -----------------------------
-
-# gptree_generate_structures.py
-
-# ... tout ton code des classes et fonctions ...
+# ======================= Démo / Test local =======================
 
 if __name__ == "__main__":
-    
+    # Petit test autonome : génère quelques runs, imprime des aperçus (AUCUN fichier).
     runs = generate_runs(
-        Ks=[1,2,3,4],
-        Ls=[10, 20, 30, 40, 50, 60],
-        ns=[8,16],
-        plevels=[0.3,0.5,0.7],
-        noises=[0,25,50,75],
-        reps=[0,1,2],
-        return_format="both"
+        Ks=[1,2,3,4],                # 4 loops "K"
+        Ls=[10, 20, 30, 40, 50, 70],             # 4 loops "L"
+        ns=[8,16],                  # 4 loops "n"
+        plevels=[0.3, 0.7],      # cohésion intra
+        noises=[0, 50, 75],          # 4 loops "p" (bruit)
+        reps=[0,1],                # réplications
+        return_format="both"     # "ete" | "nested" | "both"
     )
-    print("Total runs:", len(runs))
+    print("Total runs:", len(runs), flush=True)
 
-    
+    # Validation rapide + aperçu texte de quelques arbres
     for r in runs:
-        print(r.run_name, ":", len(r.trees_ete), "arbres")
-        for t in r.trees_ete[:4]:
-            s = t.write(format=1)
-            print("  -", (s[:100]+"...") if len(s)>100 else s)
+        v = validate_run(r)
+        print(f"- {r.run_name} | trees={len(r.trees_ete or [])} | valid={v['ok']}", flush=True)
+        for t in (r.trees_ete or [])[:2]:
+            newick = t.write(format=1)
+            print("  newick:", (newick[:120] + "...") if len(newick) > 120 else newick, flush=True)
+
+    # Exemple : accès aux labels vrais et à la structure imbriquée
+    example = runs[0]
+    print("\nExample run:", example.run_name, flush=True)
+    print("true_labels (counts):", {lab: example.true_labels.count(lab) for lab in set(example.true_labels or [])}, flush=True)
+    if example.trees_nested:
+        print("nested sample:", example.trees_nested[0], flush=True)

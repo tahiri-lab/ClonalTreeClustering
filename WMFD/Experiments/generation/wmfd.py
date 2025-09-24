@@ -64,7 +64,6 @@ def _pair_norm(v1: float, v2: float, mn: float, mx: float) -> Tuple[float, float
 def wmfd_pair(A, B, L1=0.30, L2=0.20, L3=0.25, L4=0.15, L5=0.10) -> float:
     """
     Distance WMFD entre deux arbres pré-calculés A et B.
-    Les pondérations L1..L5 peuvent être ajustées.
     """
     (_t1, bl1, h1, w1, d1, Ls1, S1) = A
     (_t2, bl2, h2, w2, d2, Ls2, S2) = B
@@ -84,7 +83,7 @@ def wmfd_pair(A, B, L1=0.30, L2=0.20, L3=0.25, L4=0.15, L5=0.10) -> float:
     for x in U:
         a,b = _pair_norm(bl1.get(x,0.0), bl2.get(x,0.0), bl_min, bl_max); dBL = abs(a-b)
         a,b = _pair_norm(h1.get(x,0.0),  h2.get(x,0.0),  h_min,  h_max);  dH  = abs(a-b)
-        dW  = 0.0  # W constant (=1)
+        dW  = 0.0  
         a,b = _pair_norm(d1.get(x,0.0),  d2.get(x,0.0),  d_min,  d_max);  dD  = abs(a-b)
         if x in I:
             cBL += dBL; cH += dH; cW += dW; cD += dD

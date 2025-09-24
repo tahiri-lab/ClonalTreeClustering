@@ -6,8 +6,7 @@ wmfd.py
 Weighted Multi-Feature Distance (WMFD) computation for phylogenetic trees.
 Computes pairwise distance matrices from tree data structures.
 
-Author: [Your Name]
-Date: [Date]
+GÜRBÜZ Emre
 """
 
 from __future__ import annotations

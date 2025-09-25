@@ -127,9 +127,9 @@ def main_generateur():
 
         
 
-    #print(f"All done. In-memory structure 'tree_data' populated with {len(tree_data)} trees.")
-    #print(tree_data)
+    print(f"All done. In-memory structure 'tree_data' populated with {len(tree_data)} trees.")
+    print(tree_data)
 
-if __name__ == "__main_generateur__":
+if __name__ == "__main__":
     install_packages()
     main_generateur()

@@ -227,12 +227,6 @@ if __name__ == "__main__":
         "(L1:0.7,(L2:0.5,L5:0.4):0.3);",
         "((L3:0.55,L4:0.55):0.25,L6:0.8);"
     ]
-    tree_dict = {(i//2 + 1, i%2 + 1): t for i, t in enumerate(newick_trees)}
-    out1 = compute_wmfd_all(tree_dict, progress=True, label_style="string")
-    print("\n[DICT] labels:", out1["labels"])
-    print("[DICT] D shape:", out1["D"].shape)
-    print(out1["D"])
-
     out2 = compute_wmfd_all(newick_trees, progress=True, label_style="index")
     print("\n[LIST] labels:", out2["labels"])
     print("[LIST] D shape:", out2["D"].shape)

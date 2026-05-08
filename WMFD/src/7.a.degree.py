@@ -1,4 +1,5 @@
 import os
+import argparse
 from pathlib import Path
 import re
 import numpy as np
@@ -295,7 +296,9 @@ def save_all_results(matrix, normalized_matrix, comparisons, node_names, output_
 def main():
     # Input and output paths
     base_path = Path(__file__).parent.parent / "simulated_data"
-    input_path = base_path / "weighted_newicks_60.txt"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=Path, default=base_path / "weighted_newicks_60.txt")
+    input_path = parser.parse_known_args()[0].input
     output_path = base_path / "tree_degrees_results.txt"
     
     try:

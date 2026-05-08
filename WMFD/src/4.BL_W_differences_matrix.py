@@ -1,4 +1,5 @@
 import os
+import argparse
 from pathlib import Path
 import numpy as np
 
@@ -119,7 +120,9 @@ def format_matrix_for_file(matrix, sequence_names, matrix_name):
 
 def main():
     base_path = Path(__file__).parent.parent / "simulated_data"
-    input_file = base_path / "weighted_newicks_60.txt"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=Path, default=base_path / "weighted_newicks_60.txt")
+    input_file = parser.parse_known_args()[0].input
     output_file = base_path / "normalized_pairwise_differences_60.txt"
     
     trees = read_newick_trees(input_file)

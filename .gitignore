@@ -1,0 +1,16 @@
+# IDE local
+.idea/
+.vs/
+CppProperties.json
+
+# Binarios compilados
+src/ClonalTreeClustering
+
+# Temporales de Python/Jupyter
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+*.pyo
+
+# Claude Code
+.claude/

@@ -1,4 +1,5 @@
 import os
+import argparse
 from pathlib import Path
 import numpy as np
 from itertools import combinations
@@ -160,7 +161,9 @@ def format_results(results, title):
 
 def main():
     base_path = Path(__file__).parent.parent / "simulated_data"
-    input_file = base_path / "weighted_newicks_60.txt"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=Path, default=base_path / "weighted_newicks_60.txt")
+    input_file = parser.parse_known_args()[0].input
     output_file = base_path / "node_comparison_results.txt"
     
     # Read trees and analyze

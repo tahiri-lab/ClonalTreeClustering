@@ -1,4 +1,5 @@
 import os
+import argparse
 from pathlib import Path
 import re
 import numpy as np
@@ -100,7 +101,9 @@ def get_nodes_from_tree(tree):
 def analyze_tree_differences():
     # Read the input file
     base_path = Path(__file__).parent.parent / "simulated_data"
-    input_file = base_path / "weighted_newicks_60.txt"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=Path, default=base_path / "weighted_newicks_60.txt")
+    input_file = parser.parse_known_args()[0].input
     
     with open(input_file, 'r') as f:
         trees = [line.strip() for line in f if line.strip()]

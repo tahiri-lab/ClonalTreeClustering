@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import re
 from pathlib import Path
@@ -123,7 +124,9 @@ def format_matrix(matrix, string_id):
 
 def main():
     base_path = Path(__file__).parent.parent / "simulated_data"
-    input_file = base_path / "weighted_newicks_60.txt"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=Path, default=base_path / "weighted_newicks_60.txt")
+    input_file = parser.parse_known_args()[0].input
     output_file = base_path / "adjacency_matrices.txt"
 
     with open(input_file, 'r') as f:

@@ -1,0 +1,16 @@
+simulated_data/.tui_input.txt
+
+# Salidas generadas por el pipeline
+simulated_data/*.txt
+simulated_data/*.csv
+simulated_data/*.npy
+simulated_data/.ipynb_checkpoints/
+
+# Temporales de Python/Jupyter
+src/__pycache__/
+src/.ipynb_checkpoints/
+__pycache__/
+.ipynb_checkpoints/
+
+# IDE local
+.idea/

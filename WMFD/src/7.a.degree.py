@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import re
 import numpy as np
 
@@ -293,8 +294,9 @@ def save_all_results(matrix, normalized_matrix, comparisons, node_names, output_
 
 def main():
     # Input and output paths
-    input_path = os.path.expanduser('~/1.mahsa.farnia/classificataion_journal/weighted_newicks_60.txt')
-    output_path = os.path.expanduser('~/1.mahsa.farnia/classificataion_journal/tree_degrees_results.txt')
+    base_path = Path(__file__).parent.parent / "simulated_data"
+    input_path = base_path / "weighted_newicks_60.txt"
+    output_path = base_path / "tree_degrees_results.txt"
     
     try:
         # Process all trees and get degrees

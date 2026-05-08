@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import numpy as np
 from itertools import combinations
 
@@ -158,9 +159,9 @@ def format_results(results, title):
     return "\n".join(output)
 
 def main():
-    base_path = os.path.expanduser("~/1.mahsa.farnia/classificataion_journal")
-    input_file = os.path.join(base_path, "weighted_newicks_60.txt")
-    output_file = os.path.join(base_path, "node_comparison_results.txt")
+    base_path = Path(__file__).parent.parent / "simulated_data"
+    input_file = base_path / "weighted_newicks_60.txt"
+    output_file = base_path / "node_comparison_results.txt"
     
     # Read trees and analyze
     trees = read_newick_trees(input_file)

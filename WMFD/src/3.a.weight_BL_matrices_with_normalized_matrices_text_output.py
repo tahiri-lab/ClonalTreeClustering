@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import numpy as np
 import re
 
@@ -120,9 +121,9 @@ def format_matrix_for_file(matrix, sequence_names, matrix_name):
     return "\n".join(lines)
 
 def main():
-    base_path = os.path.expanduser("~/1.mahsa.farnia/classificataion_journal")
-    input_file = os.path.join(base_path, "weighted_newicks_60.txt")
-    output_file = os.path.join(base_path, "matrices_with_normalization_60.txt")
+    base_path = Path(__file__).parent.parent / "simulated_data"
+    input_file = base_path / "weighted_newicks_60.txt"
+    output_file = base_path / "matrices_with_normalization_60.txt"
     
     # Read trees and create matrices
     trees = read_newick_trees(input_file)

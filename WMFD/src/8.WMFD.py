@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from pathlib import Path
 import numpy as np
 
 def get_lambda_values():
@@ -62,8 +63,9 @@ def calculate_wmfd(row, lambda1, lambda2, lambda3, lambda4, lambda5):
 def main():
     try:
         # File paths
-        input_path = os.path.expanduser('~/1.mahsa.farnia/classificataion_journal/tree_metrics 2.csv')
-        output_path = os.path.expanduser('~/1.mahsa.farnia/classificataion_journal/wmfd_results.csv')
+        base_path = Path(__file__).parent.parent / "simulated_data"
+        input_path = base_path / "tree_metrics 2.csv"
+        output_path = base_path / "wmfd_results.csv"
         
         # Read input CSV
         print("Reading input file...")

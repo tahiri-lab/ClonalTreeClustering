@@ -156,7 +156,7 @@ def calculate_normalized_distances(matrices):
 
 def main():
     # Define file paths
-    base_path = Path("/home/local/USHERBROOKE/farm2103/1.mahsa.farnia/classificataion_journal")
+    base_path = Path(__file__).parent.parent / "simulated_data"
     input_file = base_path / "weighted_newicks_60.txt"
     output_file = base_path / "Normalized_HD.txt"
 

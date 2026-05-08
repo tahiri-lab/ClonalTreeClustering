@@ -121,32 +121,31 @@ def format_matrix(matrix, string_id):
         output += f"{node:4}" + " ".join(f"{x:5}" for x in matrix[i]) + "\n"
     return output
 
-# Process input file
-input_file = Path("/home/local/USHERBROOKE/farm2103/1.mahsa.farnia/classificataion_journal/weighted_newicks_60.txt")
-output_file = Path("/home/local/USHERBROOKE/farm2103/1.mahsa.farnia/classificataion_journal/adjacency_matrices.txt")
+def main():
+    base_path = Path(__file__).parent.parent / "simulated_data"
+    input_file = base_path / "weighted_newicks_60.txt"
+    output_file = base_path / "adjacency_matrices.txt"
 
-# Process all strings
-with open(input_file, 'r') as f:
-    newick_strings = [line.strip() for line in f if line.strip()]
+    with open(input_file, 'r') as f:
+        newick_strings = [line.strip() for line in f if line.strip()]
 
-matrices = []
-text_output = ""
+    matrices = []
+    text_output = ""
 
-for i, newick in enumerate(newick_strings, 1):
-    # Extract the identifier (60_1, 60_2, etc.) from the start of the string
-    string_id = newick.split(':')[0].strip()
-    
-    connections = get_all_connections(newick)
-    matrix = create_adjacency_matrix(connections)
-    matrices.append(matrix)
-    
-    if i > 1:
-        text_output += "\n\n"
-    text_output += format_matrix(matrix, string_id)
+    for i, newick in enumerate(newick_strings, 1):
+        string_id = newick.split(':')[0].strip()
+        connections = get_all_connections(newick)
+        matrix = create_adjacency_matrix(connections)
+        matrices.append(matrix)
+        if i > 1:
+            text_output += "\n\n"
+        text_output += format_matrix(matrix, string_id)
 
-# Save outputs
-with open(output_file, 'w') as f:
-    f.write(text_output)
+    with open(output_file, 'w') as f:
+        f.write(text_output)
 
-matrices_array = np.array(matrices)
-np.save(output_file.parent / "adjacency_matrices.npy", matrices_array)
+    matrices_array = np.array(matrices)
+    np.save(output_file.parent / "adjacency_matrices.npy", matrices_array)
+
+if __name__ == "__main__":
+    main()

@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import re
 import numpy as np
 
@@ -98,8 +99,8 @@ def get_nodes_from_tree(tree):
 
 def analyze_tree_differences():
     # Read the input file
-    base_path = os.path.expanduser("~/1.mahsa.farnia/classificataion_journal")
-    input_file = os.path.join(base_path, "weighted_newicks_60.txt")
+    base_path = Path(__file__).parent.parent / "simulated_data"
+    input_file = base_path / "weighted_newicks_60.txt"
     
     with open(input_file, 'r') as f:
         trees = [line.strip() for line in f if line.strip()]
@@ -159,8 +160,8 @@ def write_results_to_file(results, output_file):
                    f"{result['num_common']:15d} {result['num_uncommon']:15d}\n")
 
 def main():
-    base_path = os.path.expanduser("~/1.mahsa.farnia/classificataion_journal")
-    output_file = os.path.join(base_path, "height_sums_common_uncommon_normalized.txt")
+    base_path = Path(__file__).parent.parent / "simulated_data"
+    output_file = base_path / "height_sums_common_uncommon_normalized.txt"
     
     results = analyze_tree_differences()
     write_results_to_file(results, output_file)

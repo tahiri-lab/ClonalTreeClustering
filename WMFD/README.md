@@ -24,3 +24,15 @@ This semimetric is specifically designed for clustering lineage trees by incorpo
 - **Comprehensive**: Evaluates all major characteristics of lineage trees.  
 - **Customizable**: Flexibility to prioritize specific features based on research goals.  
 - **Biologically Relevant**: Captures essential dynamics of B cell clonal evolution and differentiation.  
+
+---
+
+## Prototype: TUI
+### Usage
+```bash
+$ uv sync
+$ uv run src/tui.py
+```
+
+Paste your lineage tree into the box, and choose the script you want to run.
+Example trees are stored in `simulated_data/weighted_newicks_60.txt`

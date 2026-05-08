@@ -1,10 +1,11 @@
 """Interactive TUI for running the WMFD pipeline scripts (2 → 7.c) on
+Update file path handling in scripts to utilize `Pathlib` for improved compatibility and maintainability.
 user-provided weighted Newick trees.
 
 Left column  → tree list + multiline input + Add/Remove/Clear.
 Right column → script list + Run.
 After a script finishes, a modal shows its output file (truncated)
-with "Volver" and "Ejecutar siguiente" actions.
+with "Back" and "Run next" actions.
 
 Run with:  uv run python src/tui.py   (from the WMFD/ directory)
 """
@@ -100,7 +101,7 @@ def _truncate(text: str, max_lines: int) -> tuple[str, int]:
         return text, 0
     head = lines[:max_lines]
     overflow = len(lines) - max_lines
-    head.append(f"... [truncado, {overflow} líneas más]")
+    head.append(f"... [truncated, {overflow} more lines]")
     return "\n".join(head), overflow
 
 
@@ -120,8 +121,8 @@ class ResultScreen(ModalScreen[str]):
     """Shows the output of a script run."""
 
     BINDINGS = [
-        Binding("escape", "back", "Volver"),
-        Binding("n", "next", "Siguiente"),
+        Binding("escape", "back", "Back"),
+        Binding("n", "next", "Next"),
     ]
 
     DEFAULT_CSS = """
@@ -160,29 +161,29 @@ class ResultScreen(ModalScreen[str]):
         r = self.result
         if r.returncode == 0:
             trunc = (
-                f" — truncado ({r.truncated_lines} líneas más)"
+                f" — truncated ({r.truncated_lines} more lines)"
                 if r.truncated_lines
                 else ""
             )
             header = (
                 f"[b]{r.script.filename}[/]  →  exit 0\n"
-                f"Salida: {r.output_path}  ({r.output_size} bytes){trunc}"
+                f"Output: {r.output_path}  ({r.output_size} bytes){trunc}"
             )
-            body_text = r.output_text or "(archivo vacío o inexistente)"
+            body_text = r.output_text or "(empty or non-existent file)"
         else:
             header = (
                 f"[b]{r.script.filename}[/]  →  exit {r.returncode}  [red]ERROR[/]\n"
                 f"stderr:"
             )
-            body_text = r.stderr or r.stdout or "(sin salida)"
+            body_text = r.stderr or r.stdout or "(no output)"
 
         with Vertical():
             yield Static(header, id="header", markup=True)
             yield TextArea(body_text, id="body", read_only=True, soft_wrap=False)
             with Horizontal(id="footer"):
-                yield Button("← Volver", id="back")
+                yield Button("← Back", id="back")
                 yield Button(
-                    "Ejecutar siguiente →",
+                    "Run next →",
                     id="next",
                     variant="primary",
                     disabled=(not self.has_next) or r.returncode != 0,
@@ -237,7 +238,7 @@ class WMFDApp(App[None]):
     """
 
     BINDINGS = [
-        Binding("ctrl+q", "quit", "Salir"),
+        Binding("ctrl+q", "quit", "Quit"),
     ]
 
     def __init__(self) -> None:
@@ -249,7 +250,7 @@ class WMFDApp(App[None]):
         yield Header(show_clock=False)
         with Horizontal(id="main"):
             with Vertical(id="left"):
-                yield Label("[b]Árboles actuales[/]", markup=True)
+                yield Label("[b]Current trees[/]", markup=True)
                 yield ListView(id="trees")
                 yield TextArea(
                     "",
@@ -258,9 +259,9 @@ class WMFDApp(App[None]):
                 )
                 yield Static("", id="status", markup=True)
                 with Horizontal(id="left_buttons"):
-                    yield Button("Agregar", id="add", variant="success")
-                    yield Button("Eliminar", id="remove", variant="warning")
-                    yield Button("Limpiar", id="clear", variant="error")
+                    yield Button("Add", id="add", variant="success")
+                    yield Button("Remove", id="remove", variant="warning")
+                    yield Button("Clear", id="clear", variant="error")
             with Vertical(id="right"):
                 yield Label("[b]Scripts[/]", markup=True)
                 yield ListView(
@@ -268,7 +269,7 @@ class WMFDApp(App[None]):
                     id="scripts",
                 )
                 with Horizontal(id="right_buttons"):
-                    yield Button("Ejecutar seleccionado", id="run", variant="primary")
+                    yield Button("Run selected", id="run", variant="primary")
         yield Footer()
 
     def on_mount(self) -> None:
@@ -293,15 +294,15 @@ class WMFDApp(App[None]):
         msgs: list[str] = []
         if len(self.trees) < 2:
             run_btn.disabled = True
-            msgs.append(f"Pegue al menos 2 árboles ({len(self.trees)}/2).")
+            msgs.append(f"Paste at least 2 trees ({len(self.trees)}/2).")
         else:
             run_btn.disabled = False
-            msgs.append(f"{len(self.trees)} árboles cargados.")
+            msgs.append(f"{len(self.trees)} trees loaded.")
         ms = _max_seq_num(self.trees)
         if ms > MAX_SEQ_NUM_HARDCODED:
             msgs.append(
-                f"[orange1]Aviso:[/] hay seq{ms}; "
-                f"{', '.join(HARDCODED_SCRIPTS)} truncan en seq{MAX_SEQ_NUM_HARDCODED}."
+                f"[orange1]Warning:[/] seq{ms} found; "
+                f"{', '.join(HARDCODED_SCRIPTS)} truncate at seq{MAX_SEQ_NUM_HARDCODED}."
             )
         status.update("  ".join(msgs))
 
@@ -346,7 +347,7 @@ class WMFDApp(App[None]):
         INPUT_FILE.write_text("\n".join(self.trees) + "\n", encoding="utf-8")
         run_btn = self.query_one("#run", Button)
         run_btn.disabled = True
-        run_btn.label = "Ejecutando..."
+        run_btn.label = "Running..."
         self._spawn(idx)
 
     @work(thread=True, exclusive=True)
@@ -384,7 +385,7 @@ class WMFDApp(App[None]):
                 script=entry,
                 returncode=-1,
                 stdout="",
-                stderr=f"Excepción al ejecutar: {exc}",
+                stderr=f"Exception while running: {exc}",
                 output_path=DATA_DIR / entry.output,
                 output_text="",
                 output_size=0,
@@ -394,7 +395,7 @@ class WMFDApp(App[None]):
 
     def _show_result(self, result: RunResult) -> None:
         run_btn = self.query_one("#run", Button)
-        run_btn.label = "Ejecutar seleccionado"
+        run_btn.label = "Run selected"
         self._refresh_status()
         idx = SCRIPTS.index(result.script)
         has_next = idx + 1 < len(SCRIPTS)

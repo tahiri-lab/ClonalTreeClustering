@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from sklearn.cluster import DBSCAN
@@ -110,8 +111,9 @@ def print_symmetric_matrix(matrix, trees):
 
 def main():
     try:
-        input_path = os.path.expanduser('~/1.mahsa.farnia/classificataion_journal/tree_metrics 2.csv')
-        output_path = os.path.expanduser('~/1.mahsa.farnia/classificataion_journal/wmfd_clustering_results.csv')
+        base_path = Path(__file__).parent.parent / "simulated_data"
+        input_path = base_path / "tree_metrics 2.csv"
+        output_path = base_path / "wmfd_clustering_results.csv"
         
         print("Reading input file...")
         df = pd.read_csv(input_path)

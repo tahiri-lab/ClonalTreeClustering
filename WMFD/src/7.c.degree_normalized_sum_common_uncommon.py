@@ -1,4 +1,6 @@
 import os
+import argparse
+from pathlib import Path
 import re
 import numpy as np
 from itertools import combinations
@@ -178,8 +180,11 @@ def min_max_normalize_matrix(matrix):
 
 def analyze_tree_differences():
     # Input and output paths
-    input_path = os.path.expanduser('~/1.mahsa.farnia/classificataion_journal/weighted_newicks_60.txt')
-    output_path = os.path.expanduser('~/1.mahsa.farnia/classificataion_journal/degree_comparison_normalized_results.txt')
+    base_path = Path(__file__).parent.parent / "simulated_data"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=Path, default=base_path / "weighted_newicks_60.txt")
+    input_path = parser.parse_known_args()[0].input
+    output_path = base_path / "degree_comparison_normalized_results.txt"
     
     # Read trees
     with open(input_path, 'r') as f:

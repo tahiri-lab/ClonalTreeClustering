@@ -1,4 +1,6 @@
 import os
+import argparse
+from pathlib import Path
 
 def read_newick_trees(file_path):
     """
@@ -51,9 +53,11 @@ def calculate_penalty(tree1_str, tree2_str):
     return penalty
 
 def main():
-    base_path = os.path.expanduser("~/1.mahsa.farnia/classificataion_journal")
-    input_file = os.path.join(base_path, "weighted_newicks_60.txt")
-    output_file = os.path.join(base_path, "penalties.txt")
+    base_path = Path(__file__).parent.parent / "simulated_data"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=Path, default=base_path / "weighted_newicks_60.txt")
+    input_file = parser.parse_known_args()[0].input
+    output_file = base_path / "penalties.txt"
     
     newick_strings = read_newick_trees(input_file)
     n_trees = len(newick_strings)

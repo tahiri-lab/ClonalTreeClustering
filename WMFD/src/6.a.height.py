@@ -1,4 +1,6 @@
 import os
+import argparse
+from pathlib import Path
 import re
 import numpy as np
 
@@ -134,9 +136,11 @@ def print_matrices(height_matrix, normalized_matrix, differences, nodes, output_
             f.write(line + "\n\n")
 
 def main():
-    base_path = os.path.expanduser("~/1.mahsa.farnia/classificataion_journal")
-    input_file = os.path.join(base_path, "weighted_newicks_60.txt")
-    output_file = os.path.join(base_path, "height_matrices_60.txt")
+    base_path = Path(__file__).parent.parent / "simulated_data"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=Path, default=base_path / "weighted_newicks_60.txt")
+    input_file = parser.parse_known_args()[0].input
+    output_file = base_path / "height_matrices_60.txt"
     
     with open(input_file, 'r') as f:
         trees = [line.strip() for line in f if line.strip()]

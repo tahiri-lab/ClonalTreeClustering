@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import re
 from pathlib import Path
@@ -156,8 +157,10 @@ def calculate_normalized_distances(matrices):
 
 def main():
     # Define file paths
-    base_path = Path("/home/local/USHERBROOKE/farm2103/1.mahsa.farnia/classificataion_journal")
-    input_file = base_path / "weighted_newicks_60.txt"
+    base_path = Path(__file__).parent.parent / "simulated_data"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=Path, default=base_path / "weighted_newicks_60.txt")
+    input_file = parser.parse_known_args()[0].input
     output_file = base_path / "Normalized_HD.txt"
 
     # Process all the data and write to a single output file

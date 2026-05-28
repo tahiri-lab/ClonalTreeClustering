@@ -1,5 +1,6 @@
 
 import os
+from pathlib import Path
 
 def read_fasta(file_path):
     """
@@ -58,9 +59,9 @@ def count_sequence_repetitions(fasta_sequences):
 
 def main():
     # Set up paths
-    base_path = os.path.expanduser("~/1.mahsa.farnia/classificataion_journal/60")
-    fasta_file = os.path.join(base_path, "60_10.fasta")
-    newick_file = os.path.join(base_path, "60_10.GT.nk")
+    base_path = Path(__file__).parent.parent.parent / "data" / "simulated-data" / "60"
+    fasta_file = base_path / "60_10.fasta"
+    newick_file = base_path / "60_10.GT.nk"
     
     # Read files
     fasta_sequences = read_fasta(fasta_file)
